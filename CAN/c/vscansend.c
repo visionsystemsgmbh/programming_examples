@@ -46,12 +46,38 @@ int main (int argc, char *argv[])
 	if (VSCAN_Ioctl(h, VSCAN_IOCTL_SET_SPEED, (void*)bitrate) != VSCAN_ERR_OK)
 		GOTO_ERROR("Setting CAN speed failed");
 
+	/* send standard frame */
 	msg.Id = 0x100;
 	msg.Size = 4;
+	msg.Flags = VSCAN_FLAGS_STANDARD;
 	msg.Data[0] = 0x00;
 	msg.Data[1] = 0x01;
 	msg.Data[2] = 0x02;
 	msg.Data[3] = 0x03;
+
+	if (VSCAN_Write(h, &msg, 1, &rv) != VSCAN_ERR_OK)
+		GOTO_ERROR("VSCAN_Write failed");
+	if (VSCAN_Flush(h) != VSCAN_ERR_OK)
+		GOTO_ERROR("VSCAN_Flush failed");
+
+	/* send extended frame */
+	msg.Id = 0x100;
+	msg.Size = 4;
+	msg.Flags = VSCAN_FLAGS_EXTENDED;
+	msg.Data[0] = 0x00;
+	msg.Data[1] = 0x01;
+	msg.Data[2] = 0x02;
+	msg.Data[3] = 0x03;
+
+	if (VSCAN_Write(h, &msg, 1, &rv) != VSCAN_ERR_OK)
+		GOTO_ERROR("VSCAN_Write failed");
+	if (VSCAN_Flush(h) != VSCAN_ERR_OK)
+		GOTO_ERROR("VSCAN_Flush failed");
+
+	/* send RTR frame */
+	msg.Id = 0x100;
+	msg.Size = 0;
+	msg.Flags = VSCAN_FLAGS_REMOTE;
 
 	if (VSCAN_Write(h, &msg, 1, &rv) != VSCAN_ERR_OK)
 		GOTO_ERROR("VSCAN_Write failed");
