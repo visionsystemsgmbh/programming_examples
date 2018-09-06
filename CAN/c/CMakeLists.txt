@@ -22,4 +22,14 @@ if (SUPPORT_32_BIT_ON_64_BIT)
 endif (SUPPORT_32_BIT_ON_64_BIT)
 target_link_libraries (vscansend ${VS_CAN_API} ${CMAKE_THREAD_LIBS_INIT})
 
+# vscandump.exe
+add_executable(vscandump vscandump.c)
+if (SUPPORT_32_BIT_ON_64_BIT)
+	set_target_properties(
+		vscandump PROPERTIES OUTPUT_NAME vscansend
+		COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+endif (SUPPORT_32_BIT_ON_64_BIT)
+target_link_libraries (vscandump ${VS_CAN_API} ${CMAKE_THREAD_LIBS_INIT})
+
 install(TARGETS vscansend RUNTIME DESTINATION bin)
+install(TARGETS vscandump RUNTIME DESTINATION bin)
