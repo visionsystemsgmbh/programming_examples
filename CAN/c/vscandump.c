@@ -33,7 +33,6 @@ int main (int argc, char *argv[])
 	VSCAN_API_VERSION version;
 	DWORD rv;
 	DWORD bitrate;
-	VSCAN_CODE_MASK codeMask;
 
 	if (VSCAN_Ioctl(0, VSCAN_IOCTL_GET_API_VERSION, &version))
 		GOTO_ERROR("Failed to get API version");
@@ -50,10 +49,10 @@ int main (int argc, char *argv[])
 	if (strlen(argv[2]) > 8)
 		GOTO_ERROR("CAN bitrate must look like 'Sxxx', where x can be an index\n"
 			   "from 1 to 8 or bitrate as a number like 125000");
-	if (sscanf(argv[2], "S%7d", &bitrate) != 1)
+	if (sscanf(argv[2], "S%7ld", &bitrate) != 1)
 		GOTO_ERROR("Failed to parse CAN bitrate");
 	if (bitrate < 1 || bitrate > 1000000)
-		GOTO_ERROR("Wrong bitrate %d\n", bitrate);
+		GOTO_ERROR("Wrong bitrate %ld\n", bitrate);
 
 	h = VSCAN_Open(tty, VSCAN_MODE_NORMAL);
 	if (h <= 0)
