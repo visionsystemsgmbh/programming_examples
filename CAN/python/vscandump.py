@@ -2,7 +2,7 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 """
-Example for receiing CAN frames via ASCII protocol (slcan).
+Example for receiving CAN frames via ASCII protocol (slcan).
 """
 
 import sys
