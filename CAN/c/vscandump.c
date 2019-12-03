@@ -34,6 +34,12 @@ int main (int argc, char *argv[])
 	DWORD rv;
 	DWORD bitrate;
 
+	/* configure the default debug options*/
+	if (VSCAN_Ioctl(0, VSCAN_IOCTL_SET_DEBUG_MODE, VSCAN_DEBUG_MODE_CONSOLE))
+		GOTO_ERROR("Failed to set debug mode");
+	if (VSCAN_Ioctl(0, VSCAN_IOCTL_SET_DEBUG, VSCAN_DEBUG_NONE))
+		GOTO_ERROR("Failed to set debug level");
+
 	if (VSCAN_Ioctl(0, VSCAN_IOCTL_GET_API_VERSION, &version))
 		GOTO_ERROR("Failed to get API version");
 	
@@ -64,8 +70,10 @@ int main (int argc, char *argv[])
 
 	for (;;)
 	{
-		if (VSCAN_Read(h, &msg, 1, &rv) != VSCAN_ERR_OK)
+		/* read only one CAN telegram and break on failure */
+		if ((VSCAN_Read(h, &msg, 1, &rv) != VSCAN_ERR_OK) || !rv) {
 			GOTO_ERROR("VSCAN_Read failed");
+		}
 		dump_frame(&msg);
 		
 	}
