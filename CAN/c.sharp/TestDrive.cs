@@ -57,7 +57,6 @@ namespace MyApp
             VSCAN CanDevice = new VSCAN();
             UInt32 Written = 0;
             UInt32 Read = 0;
-            VSCAN_HWPARAM hw = new VSCAN_HWPARAM();
             VSCAN_API_VERSION api_ver = new VSCAN_API_VERSION();
             byte Flags = 0x0;
 
@@ -74,12 +73,6 @@ namespace MyApp
                 CanDevice.SetSpeed(VSCAN.VSCAN_SPEED_1M);
                 CanDevice.SetTimestamp(VSCAN.VSCAN_TIMESTAMP_ON);
                 CanDevice.SetBlockingRead(VSCAN.VSCAN_IOCTL_ON);
-
-                // get HW Params
-                CanDevice.GetHwParams(ref hw);
-                Console.WriteLine("Get hardware paramter:");
-                Console.WriteLine("HwVersion:" + hw.HwVersion + " SwVersion:" + (hw.SwVersion >> 4) + "." + (hw.SwVersion & 0x0f));
-                Console.WriteLine("SerNr:" + hw.SerialNr + " HwType:" + hw.HwType);
 
                 // get API version
                 CanDevice.GetApiVersion(ref api_ver);
