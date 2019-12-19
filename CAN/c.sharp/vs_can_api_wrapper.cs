@@ -1,7 +1,7 @@
 /**
  * @file vs_can_api_wrapper.cs
  * @brief VS CAN API wrapper class 
- * @version 1.6.0
+ * @version 1.10.0
  */
 
 using System;
@@ -110,6 +110,18 @@ namespace VSCom.CanApi
 		public byte Extended;
 	}
 
+	/**
+	* @brief KeepAlive Settings Structure
+	*/
+	[StructLayout(LayoutKind.Sequential)]
+	public struct VSCAN_KEEP_ALIVE
+	{
+		public UInt32 OnOff;
+		public UInt32 KeepAliveTime;
+		public UInt32 KeepAliveInterval;
+		public UInt32 KeepAliveCnt;
+	}
+
 	class VSCANException : Exception
 	{
 		public VSCANException(string str)
@@ -196,6 +208,8 @@ namespace VSCom.CanApi
 		/**< get API version */
 		public const Int32 VSCAN_IOCTL_SET_FILTER = 12;
 		/**< set SocketCAN like filter */
+		public const Int32 VSCAN_IOCTL_SET_KEEPALIVE = 13;
+		/**< set up KeepAlive mechanism */
 		/** @} */
 
 		/**
@@ -679,6 +693,25 @@ namespace VSCom.CanApi
 				throw new VSCANException(err_string.ToString());
 			}
 			Marshal.FreeHGlobal(pFilter);
+		}
+		/** @} */
+
+		/**
+		* @brief set up KeepAlive mechanism
+		* @param KeepAliveConf pointer to VSCAN_KEEP_ALIVE structure
+		*/
+		public void SetKeepAlive(VSCAN_KEEP_ALIVE KeepAliveConf)
+		{
+			IntPtr pKeepAliveConf = Marshal.AllocHGlobal(Marshal.SizeOf(KeepAliveConf));
+			Marshal.StructureToPtr(KeepAliveConf, pKeepAliveConf, false);
+			Int32 rc = VSCAN_Ioctl(handle, VSCAN_IOCTL_SET_KEEPALIVE, pKeepAliveConf);
+			if (rc != 0) {
+				var err_string = new StringBuilder(64);
+
+				VSCAN_GetErrorString(rc, err_string, 63);
+				throw new VSCANException(err_string.ToString());
+			}
+			Marshal.FreeHGlobal(pKeepAliveConf);
 		}
 		/** @} */
 	}
