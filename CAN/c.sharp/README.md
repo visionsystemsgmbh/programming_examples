@@ -25,4 +25,11 @@ and using self reception mode, so if for example USB-CAN Plus is installed
 properly and there is a functional connection between USB-CAN and your CAN bus
 (termination), the example program should run as it is.
 
+## CMake support in Windows
+
+If you have CMake version 3.8 and later as also Visual Studio, you can use
+CMake to create your Visual Studio project. Usually, it is enough to open this
+folder with Visual Studio, and it will automatically create a solution/project
+using `CMakeLists.txt` file.
+
 [1] Doxygen project: http://www.stack.nl/~dimitri/doxygen/
