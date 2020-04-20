@@ -32,4 +32,18 @@ CMake to create your Visual Studio project. Usually, it is enough to open this
 folder with Visual Studio, and it will automatically create a solution/project
 using `CMakeLists.txt` file.
 
+## .NET Core support
+
+Both the `TestDrive.cs` and `vs_can_api_wrapper.cs` can be compiled and run via
+the `dotnet` utility. Invoke the following command to create a sample console
+project:
+
+    dotnet new console --output sample1
+
+Now copy `TestDrive.cs` as `Program.cs` to the `sample1` folder together with
+the `vs_can_api_wrapper.cs` file and invoke the following command to run the
+exaple:
+
+    dotnet run --project sample1
+    
 [1] Doxygen project: http://www.stack.nl/~dimitri/doxygen/
