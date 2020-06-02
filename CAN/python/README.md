@@ -42,3 +42,16 @@ constructor.
 
 This example was tested against a CANopen node from
 [CANopenSocket](https://github.com/CANopenNode/CANopenSocket) project.
+
+SNMP Example
+------------
+
+SNMP example requires PySNMP package:
+
+    pip install pysnmp
+
+`vssnmpcan.py` takes CAN server and client IPs as also bitrates and TCP port
+number as parameters and configures two NetCAN Plus devices to a CAN Bridge.
+Invoke the following command to get the list of command line parameters:
+
+    python3 vssnmpcan.py --help
