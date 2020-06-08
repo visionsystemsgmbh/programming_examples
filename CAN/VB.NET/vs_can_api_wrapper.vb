@@ -133,7 +133,7 @@ Public Class VSCAN
     ''' </summary>
     Public Const VSCAN_DEBUG_LOW As Integer = -1
     ''' <summary>
-    ''' informations from the VSCAN API
+    ''' information from the VSCAN API
     ''' </summary>
     Public Const VSCAN_DEBUG_MID As Integer = -51
     ''' <summary>

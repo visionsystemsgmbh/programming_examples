@@ -42,7 +42,7 @@ project:
 
 Now copy `TestDrive.cs` as `Program.cs` to the `sample1` folder together with
 the `vs_can_api_wrapper.cs` file and invoke the following command to run the
-exaple:
+example:
 
     dotnet run --project sample1
     

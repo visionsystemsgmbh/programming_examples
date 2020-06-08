@@ -54,7 +54,7 @@ Module TestDrive
 
             ' get HW params
             CanDevice.GetHwParams(hw)
-            Console.WriteLine("Get hardware paramter:")
+            Console.WriteLine("Get hardware parameter:")
             Console.WriteLine("HwVersion:" + hw.HwVersion.ToString + " SwVersion:" + (hw.SwVersion >> 4).ToString + "." + (hw.SwVersion And &HF).ToString)
             Console.WriteLine("SerNr:" + hw.SerialNr.ToString + " HwType:" + hw.HwType.ToString)
 

@@ -23,7 +23,7 @@ HANDLE open_serial_port(char *szPort, char *ser_settings)
 			NULL);
 
 	if (hComm == INVALID_HANDLE_VALUE) {
-		printf("ERROR: openning port: err: %d\n", GetLastError());
+		printf("ERROR: opening port: err: %d\n", GetLastError());
 		return INVALID_HANDLE_VALUE;
 	}
 	

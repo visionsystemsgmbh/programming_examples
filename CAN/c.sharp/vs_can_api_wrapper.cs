@@ -220,7 +220,7 @@ namespace VSCom.CanApi
 		public const Int32 VSCAN_DEBUG_LOW = -1;
 		/**< errors from the VSCAN API */
 		public const Int32 VSCAN_DEBUG_MID = -51;
-		/**< informations from the VSCAN API */
+		/**< information from the VSCAN API */
 		public const Int32 VSCAN_DEBUG_HIGH = -101;
 		/**< errors from system functions */
 		/** @} */
@@ -675,7 +675,7 @@ namespace VSCom.CanApi
         
 		/**
         * @brief set filter
-        * @param FilterArr filter arrary:
+        * @param FilterArr filter array:
         */
 		public void SetFilter(VSCAN_FILTER[]FilterArr)
 		{
