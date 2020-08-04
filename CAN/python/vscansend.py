@@ -6,6 +6,7 @@ Example for sending CAN frames via ASCII protocol (slcan).
 """
 
 import sys
+import time
 
 import can
 import serial
@@ -41,6 +42,8 @@ def main():
                       extended_id=True,
                       is_remote_frame=True)
     bus.send(msg)
+
+    time.sleep(5)
 
     bus.shutdown()
 
