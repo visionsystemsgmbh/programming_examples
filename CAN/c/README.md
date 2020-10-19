@@ -30,3 +30,28 @@ Compilation
 4. `cd build`
 5. `cmake .. -G "Visual Studio 9 2008"`
 6. open generated solution file
+
+Usage
+-----
+
+### Linux
+
+For USB-CAN Plus devices invoke (S2 - 50000 bit/s):
+
+    vscandump /dev/ttyUSB0 S2
+
+For NetCAN Plus device with the IP address 192.168.1.10 and Data Port 2001
+invoke (S2 - 50000 bit/s):
+
+    vscandump 192.168.1.10:2001 S2
+
+### Windows
+
+For USB-CAN Plus devices invoke (S2 - 50000 bit/s):
+
+    vscandump.exe COM3 S2
+
+For NetCAN Plus device with the IP address 192.168.1.10 and Data Port 2001
+invoke (S2 - 50000 bit/s):
+
+    vscandump.exe 192.168.1.10:2001 S2
