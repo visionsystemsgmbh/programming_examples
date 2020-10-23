@@ -66,9 +66,8 @@ int main (int argc, char *argv[])
 	ret = EXIT_SUCCESS;
 
 error:
-	
 	/* close socket */
-	if (ret >= 0)
+	if (s >= 0)
 		close(s);
 
 	return ret;
