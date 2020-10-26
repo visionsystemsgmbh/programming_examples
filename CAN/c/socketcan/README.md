@@ -21,7 +21,8 @@ package.
 
 ### OnRISC Baltos
 
-On Baltos systems you have an embedded CAN interface called `can0`. To set it to 1Mbit/s bitrate, invoke:
+On Baltos systems you have an embedded CAN interface called `can0`. To set it
+to 1Mbit/s bitrate, invoke:
 
 1. `ip link set can0 down`
 2. `ip link set can0 type can bitrate 1000000`
@@ -58,3 +59,25 @@ For Baltos invoke:
 For USB-CAN Plus or NetCAN Plus invoke:
 
     ./vscandump slcan0
+
+## J1939
+
+Since Linux kernel 5.4.x SocketCAN also supports J1939 protocol. Take a look at
+the related kernel [documentation](https://www.kernel.org/doc/html/latest/networking/j1939.html). This documentation describes motivation
+for this approach, API, and some usage scenarios.
+
+This [tutorial](https://github.com/linux-can/can-utils/blob/master/can-j1939-kickstart.md) describes the first steps in learning the J1939
+framework under Linux. Also take a look at this [guide](https://github.com/linux-can/can-utils/blob/master/can-j1939-install-kernel-module.md) for the
+installation of J1939 related drivers.
+
+### Programming Examples
+
+Invoke the following commads to also build J1939 examples:
+
+1. `cmake .. -DJ1939_EXAMPLES=ON`
+2. `make`
+
+The following examples are available:
+
+* `j1939device.c` and `j1939logger.c`- send and receive broadcast
+messages from a single source with only one PGN
