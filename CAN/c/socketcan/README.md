@@ -16,7 +16,7 @@ These examples come with a CMake file `CMakeLists.txt`. CMake usage is optional.
 
 ## CAN Interface Setup
 
-SocketCAN interfaces will configured via `ip` utility from the `iproute2`
+SocketCAN interfaces will be configured via `ip` utility from the `iproute2`
 package.
 
 ### OnRISC Baltos
@@ -63,12 +63,14 @@ For USB-CAN Plus or NetCAN Plus invoke:
 ## J1939
 
 Since Linux kernel 5.4.x SocketCAN also supports J1939 protocol. Take a look at
-the related kernel [documentation](https://www.kernel.org/doc/html/latest/networking/j1939.html). This documentation describes motivation
-for this approach, API, and some usage scenarios.
+the related kernel [documentation](https://www.kernel.org/doc/html/latest/networking/j1939.html).
+This documentation describes motivation for this approach, API, and some usage
+scenarios.
 
-This [tutorial](https://github.com/linux-can/can-utils/blob/master/can-j1939-kickstart.md) describes the first steps in learning the J1939
-framework under Linux. Also take a look at this [guide](https://github.com/linux-can/can-utils/blob/master/can-j1939-install-kernel-module.md) for the
-installation of J1939 related drivers.
+This [tutorial](https://github.com/linux-can/can-utils/blob/master/can-j1939-kickstart.md)
+describes the first steps in learning the J1939 framework under Linux. Also
+take a look at this [guide](https://github.com/linux-can/can-utils/blob/master/can-j1939-install-kernel-module.md)
+for the installation of the J1939 related drivers.
 
 ### Programming Examples
 
