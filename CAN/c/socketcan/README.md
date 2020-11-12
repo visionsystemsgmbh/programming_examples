@@ -42,7 +42,7 @@ USB-CAN Plus to 1Mbit/s bitrate and attach it to the `slcan0` interface:
 ### NetCAN Plus
 
 These devices work over TCP/IP and need a pseudo device that simulates a
-serial port i.e. `/dev/netcan0`. As super user you can create it as follows:
+serial port i.e. `/dev/netcan0`. As a superuser, you can create it as follows:
 
     socat pty,link=/dev/netcan0,raw tcp:192.168.254.254:2001 &
 
@@ -70,8 +70,9 @@ For USB-CAN Plus or NetCAN Plus invoke:
 
 ## J1939
 
-Since Linux kernel 5.4.x SocketCAN also supports J1939 protocol. Take a look at
-the related kernel [documentation](https://www.kernel.org/doc/html/latest/networking/j1939.html).
+Since Linux kernel 5.4.x SocketCAN also supports the J1939 protocol. Take a look
+at the related kernel
+[documentation](https://www.kernel.org/doc/html/latest/networking/j1939.html).
 This documentation describes motivation for this approach, API, and some usage
 scenarios.
 
@@ -82,7 +83,7 @@ for the installation of the J1939 related drivers.
 
 ### Programming Examples
 
-Invoke the following commads to also build J1939 examples:
+Invoke the following commands to also build J1939 examples:
 
 1. `cmake .. -DJ1939_EXAMPLES=ON`
 2. `make`
