@@ -42,12 +42,20 @@ USB-CAN Plus to 1Mbit/s bitrate and attach it to the `slcan0` interface:
 ### NetCAN Plus
 
 These devices work over TCP/IP and need a pseudo device that simulates a
-serial port i.e. `/dev/netcan0`. Then it can be attached to the
-SocketCAN interface. The following commands set up NetCAN Plus to
-1Mbit/s bitrate and attach it to the `slcan0` interface:
+serial port i.e. `/dev/netcan0`. As super user you can create it as follows:
 
-1. `socat pty,link=/dev/netcan0,raw tcp:192.168.254.254:2001&`
-2. `slcand -c -o -s8 /dev/netcan0`
+    socat pty,link=/dev/netcan0,raw tcp:192.168.254.254:2001 &
+
+
+If you use `sudo`, invoke:
+
+    sudo sh -c "socat pty,link=/dev/netcan0,raw tcp:192.168.254.254:2001 &"
+
+Then this device can be attached to the SocketCAN interface. The following
+commands set up NetCAN Plus to 1Mbit/s bitrate and attach it to the `slcan0`
+interface:
+
+1. `slcand -c -o -s8 /dev/netcan0`
 2. `ip link set up slcan0`
 
 ## Usage examples
