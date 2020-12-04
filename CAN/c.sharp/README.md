@@ -10,10 +10,11 @@ The following files are provided:
 ## Requirements
 
 C# sharp wrapper (`vs_can_api_wrapper.cs`) invokes functions provided by
-`vs_can_api.dll`. Before using the wrapper make sure this DLL can be
-found by Windows either via placing it in one of the folders mentioned in
-PATH environment variable or via placing in your application's binary
-folder.
+`vs_can_api.dll` or `libvs_can_api.so`. Before using the wrapper make sure
+these library files can be found by the operating system either via placing
+them in one of the folders mentioned in PATH environment variable in Windows
+or in the library search paths in Linux or via placing in your application's
+binary folder.
 
 ## Usage
 
@@ -35,8 +36,8 @@ using `CMakeLists.txt` file.
 ## .NET Core support
 
 Both the `TestDrive.cs` and `vs_can_api_wrapper.cs` can be compiled and run via
-the `dotnet` utility. Invoke the following command to create a sample console
-project:
+the `dotnet` utility (Both Windows and Linux OSs are supported). Invoke the
+following command to create a sample console project:
 
     dotnet new console --output sample1
 
