@@ -16,7 +16,7 @@ Compilation
 ### Linux
 
 1. `git clone https://github.com/visionsystemsgmbh/programming_examples.git`
-2. `cd CAN/c`
+2. `cd CAN/c/vs_can_api`
 3. `mkdir build`
 4. `cd build`
 5. `cmake ..`
@@ -25,7 +25,7 @@ Compilation
 ### Windows (Microsoft Visual Studio 2008)
 
 1.  `git clone https://github.com/visionsystemsgmbh/programming_examples.git`
-2. `cd CAN/c`
+2. `cd CAN\c\vs_can_api`
 3. `mkdir build`
 4. `cd build`
 5. `cmake .. -G "Visual Studio 9 2008"`
