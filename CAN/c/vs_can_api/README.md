@@ -6,9 +6,9 @@ Requirements
 
 These examples come with a CMake file `CMakeLists.txt`. CMake usage is optional.
 
-You'll also need vs_can_api library files. Either put them into this folder
-or anywhere else where CMake or the IDE of your choice will be able to find
-them.
+You'll also need vs_can_api library files. You can find the ZIP archive in the
+download area of your product. Either put them into this folder or anywhere
+else where CMake or the IDE of your choice will be able to find them.
 
 Compilation
 -----------
