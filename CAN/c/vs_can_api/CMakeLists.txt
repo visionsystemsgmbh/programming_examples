@@ -7,6 +7,9 @@ option(J1939_EXAMPLES "Build J1939 examples" OFF)
 
 include_directories(BEFORE ${PROJECT_BINARY_DIR})
 
+# pthread library is required for linking against libvs_can_api.a
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+find_package(Threads REQUIRED)
 find_library(
 	VS_CAN_API
 	NAMES libvs_can_api.a vs_can_api.lib libvs_can_api.so
@@ -28,7 +31,7 @@ if (SUPPORT_32_BIT_ON_64_BIT)
 		vscansend PROPERTIES OUTPUT_NAME vscansend
 		COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 endif (SUPPORT_32_BIT_ON_64_BIT)
-target_link_libraries (vscansend ${VS_CAN_API})
+target_link_libraries (vscansend ${VS_CAN_API} ${CMAKE_THREAD_LIBS_INIT})
 
 # vscandump.exe
 add_executable(vscandump vscandump.c)
@@ -37,7 +40,7 @@ if (SUPPORT_32_BIT_ON_64_BIT)
 		vscandump PROPERTIES OUTPUT_NAME vscandump
 		COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
 endif (SUPPORT_32_BIT_ON_64_BIT)
-target_link_libraries (vscandump ${VS_CAN_API})
+target_link_libraries (vscandump ${VS_CAN_API} ${CMAKE_THREAD_LIBS_INIT})
 
 if (J1939_EXAMPLES)
 	# vs_j1939_dump.exe
@@ -51,6 +54,7 @@ if (J1939_EXAMPLES)
 		vs_j1939_dump
 		${VS_CAN_API}
 		${VS_CAN_J1939}
+		${CMAKE_THREAD_LIBS_INIT}
 	)
 	# vs_j1939_send.exe
 	add_executable(vs_j1939_send vs_j1939_send.c)
@@ -63,6 +67,7 @@ if (J1939_EXAMPLES)
 		vs_j1939_send
 		${VS_CAN_API}
 		${VS_CAN_J1939}
+		${CMAKE_THREAD_LIBS_INIT}
 	)
 endif (J1939_EXAMPLES)
 
