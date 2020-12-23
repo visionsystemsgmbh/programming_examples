@@ -15,6 +15,7 @@ find_library(
 	NAMES libvs_can_api.a vs_can_api.lib libvs_can_api.so
 	HINTS ${PROJECT_SOURCE_DIR}
 	DOC "vs_can_api")
+message(STATUS "VSCAN API Library found: ${VS_CAN_API}")
 
 if (J1939_EXAMPLES)
 	find_library(
@@ -22,6 +23,7 @@ if (J1939_EXAMPLES)
 		NAMES libvs_can_j1939.a vs_can_j1939.lib libvs_can_j1939.so
 		HINTS ${PROJECT_SOURCE_DIR}
 		DOC "vs_can_j1939")
+	message(STATUS "VSCAN J1939 Library found: ${VS_CAN_J1939}")
 endif (J1939_EXAMPLES)
 
 # vscansend.exe
