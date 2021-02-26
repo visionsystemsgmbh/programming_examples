@@ -9,9 +9,22 @@ import argparse
 import sys
 
 import serial
+import serial.tools.list_ports
 
 VSCAN_OK = b'\r'
 VSCAN_KO = b'\x07'
+
+
+def find_port(port):
+    """Find serial port in the list."""
+    ports = serial.tools.list_ports.grep(port)
+    for item in ports:
+        if item.device == port:
+            print(f"Serial port found: {item}")
+            if item.description.find('USB-CAN Plus') != -1:
+                print("This device has a correct description")
+            else:
+                print(f"Device description is wrong: {item.description}")
 
 
 def init_serial_port(port):
@@ -23,6 +36,8 @@ def init_serial_port(port):
                                          timeout=1,
                                          rtscts=True)
     except serial.serialutil.SerialException as err:
+        print(err)
+    except BrokenPipeError as err:
         print(err)
 
     return ser_port
@@ -72,6 +87,10 @@ def main():
                         action="store",
                         help="Serial port name")
     args = parser.parse_args()
+
+    if sys.platform.startswith('linux'):
+        find_port(args.port)
+
     ser_port = init_serial_port(args.port)
     if not ser_port:
         print("Failed to open serial port")
