@@ -5,8 +5,8 @@
 CAN device tester.
 """
 
-import sys
 import argparse
+import sys
 
 import serial
 
