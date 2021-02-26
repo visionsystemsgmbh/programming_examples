@@ -6,6 +6,7 @@ CAN device tester.
 """
 
 import argparse
+from subprocess import Popen, PIPE
 import sys
 
 import serial
@@ -13,6 +14,15 @@ import serial.tools.list_ports
 
 VSCAN_OK = b'\r'
 VSCAN_KO = b'\x07'
+
+
+def lsof(port):
+    """Check if a port is already open."""
+    proc = Popen(["lsof"], stdout=PIPE, stderr=PIPE)
+    output = proc.communicate()[0]
+    for line in output.decode('ascii').split('\n'):
+        if line.find(port) != -1:
+            print(f"{port} is already open:\n{line}")
 
 
 def find_port(port):
@@ -90,6 +100,7 @@ def main():
 
     if sys.platform.startswith('linux'):
         find_port(args.port)
+        lsof(args.port)
 
     ser_port = init_serial_port(args.port)
     if not ser_port:
@@ -99,7 +110,7 @@ def main():
     if not close_can_channel(ser_port):
         print("Failed to close the CAN channel")
         print("The port could be opened but this "
-              "device doesn't respond to the ASCII protocol")
+              "device doesn't respond to the ASCII commands")
         sys.exit(1)
 
     ser_num = get_serial_number(ser_port)
