@@ -4,12 +4,12 @@ VSCAN Device Tester
 This is a small utility that checks whether a device behind a given
 serial port is a VSCAN device.
 
-    pip3 install pyserial
-
 Requirements
 ------------
 
 The script requires Python 3.6 or later and a PySerial module.
+
+    pip3 install pyserial
 
 Usage
 -----
