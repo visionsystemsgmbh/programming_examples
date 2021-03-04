@@ -54,7 +54,7 @@ def init_serial_port(port):
 
 
 def close_can_channel(port):
-    """Send 'C' to close the CAN channle."""
+    """Send 'C' to close the CAN channel."""
     try:
         port.write("C\r".encode('ascii'))
     except serial.serialutil.SerialException as err:
