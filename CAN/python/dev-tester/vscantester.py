@@ -90,6 +90,27 @@ def get_serial_number(port):
     return buf[1:len(buf) - 2]
 
 
+def get_version_info(port):
+    """Send 'V' to get the firmware version."""
+    ver = None
+    try:
+        port.write("V\r".encode('ascii'))
+    except serial.serialutil.SerialException as err:
+        print(err)
+        return ver
+
+    buf = port.read(6)
+    if buf[0] != 86:
+        print(f"Wrong first character: {buf[0]}")
+        return ver
+
+    if buf[len(buf) - 1] != 13:
+        print(f"Wrong last character: {buf[len(buf) - 1]}")
+        return ver
+
+    return buf[1:len(buf) - 1]
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester')
@@ -118,8 +139,19 @@ def main():
         print("Failed to get the serial number")
         sys.exit(1)
 
-    print(f"Found VSCAN device with the serial number "
-          f"{ser_num.decode('ascii')}")
+    ver = get_version_info(ser_port)
+    if not ver:
+        print("Failed to get the firmware version")
+        sys.exit(1)
+
+    ver_major = int(ver[2:3], 16)
+    ver_minor = int(ver[3:], 16)
+    hw_major = int(ver[:1], 16)
+    hw_minor = int(ver[1:2], 16)
+    print(f"Found VSCAN device with the following info:")
+    print(f"{args.port} -> (SN: {ser_num.decode('ascii')}, "
+          f"FW: {ver_major}:{ver_minor}, "
+          f"HW: {hw_major}:{hw_minor})")
 
     ser_port.close()
 
