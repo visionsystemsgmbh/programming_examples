@@ -182,8 +182,9 @@ def main():
         port_list = find_all_usb_can_devices()
         if not port_list:
             print("No USB-CAN devices found")
-            if not find_ftdi_driver():
-                print("FTDI driver is neither loaded no builtin")
+            if sys.platform.startswith('linux'):
+                if not find_ftdi_driver():
+                    print("FTDI driver is not available")
     else:
         port_list.append(args.port)
 
