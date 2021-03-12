@@ -6,8 +6,9 @@ CAN device tester.
 """
 
 import argparse
-from subprocess import Popen, PIPE
+import os.path
 import sys
+from subprocess import PIPE, Popen
 
 import serial
 import serial.tools.list_ports
@@ -130,6 +131,44 @@ def find_port(port):
                 print(f"Device description is wrong: {item.description}")
 
 
+def check_lsmod():
+    """Invoke lsmod and check for ftdi_sio driver."""
+    proc = Popen(["lsmod"], stdout=PIPE, stderr=PIPE)
+    output = proc.communicate()[0]
+    for line in output.decode('ascii').split('\n'):
+        if "ftdi_sio" in line:
+            return True
+
+    return False
+
+
+def find_ftdi_driver():
+    """Check whether ftdi_sio is available on the system."""
+    if check_lsmod():
+        print("ftdi_sio is loaded")
+        return True
+
+    # get kernel version
+    proc = Popen(["uname", "-r"], stdout=PIPE, stderr=PIPE)
+    output = proc.communicate()[0]
+    kernel_ver = output.decode('ascii').split('\n')[0]
+
+    # check if ftdi_sio.ko is in rootfs
+    if os.path.isfile(
+            f"/lib/modules/{kernel_ver}/kernel/drivers/usb/serial/ftdi_sio.ko"):
+        print("ftdi_sio could be found in /lib/modules")
+        return True
+
+    # check if FTDI driver is builtin
+    with open(f"/lib/modules/{kernel_ver}/modules.builtin", "r") as mods:
+        for line in mods:
+            if "ftdi_sio.ko" in line:
+                print("ftdi_sio is builtin")
+                return True
+
+    return False
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester')
@@ -143,6 +182,8 @@ def main():
         port_list = find_all_usb_can_devices()
         if not port_list:
             print("No USB-CAN devices found")
+            if not find_ftdi_driver():
+                print("FTDI driver is neither loaded no builtin")
     else:
         port_list.append(args.port)
 
