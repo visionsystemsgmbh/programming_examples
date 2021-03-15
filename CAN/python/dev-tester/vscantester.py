@@ -8,6 +8,7 @@ CAN device tester.
 import argparse
 import os.path
 import sys
+import textwrap
 from subprocess import PIPE, Popen
 
 import serial
@@ -15,6 +16,15 @@ import serial.tools.list_ports
 
 VSCAN_OK = b'\r'
 VSCAN_KO = b'\x07'
+
+EXAMPLES = ('''\
+            Examples
+            --------
+            Find all USB-CAN Plus devices:
+                python3 vscantester.py all
+            Check a device behind /dev/ttyUSB0:
+                python3 vscantester.py /dev/ttyUSB0
+            ''')
 
 
 class UsbCan(object):
@@ -171,10 +181,12 @@ def find_ftdi_driver():
 
 def main():
     """main routine."""
-    parser = argparse.ArgumentParser(description='VSCAN device tester')
+    parser = argparse.ArgumentParser(description='VSCAN device tester',
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     epilog=textwrap.dedent(EXAMPLES))
     parser.add_argument("port",
                         action="store",
-                        help="Serial port name")
+                        help="Serial port name or 'all'")
     args = parser.parse_args()
 
     port_list = []
