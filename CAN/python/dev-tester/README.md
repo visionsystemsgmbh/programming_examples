@@ -36,7 +36,7 @@ Convert the Script to an Executable in Windows
 
 You can convert the script to a stand-alone executable using PyInstaller:
 
-    pip3 install pyinstaller
+    pip3 install pyserial pyinstaller
     pyinstaller --onefile vscantester.py
 
 The `exe` can be found in the `dist` folder.
