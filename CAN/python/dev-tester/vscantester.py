@@ -182,12 +182,17 @@ def find_ftdi_driver():
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester',
+                                     usage=argparse.SUPPRESS,
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog=textwrap.dedent(EXAMPLES))
     parser.add_argument("port",
                         action="store",
                         help="Serial port name or 'all'")
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+    except SystemExit:
+        parser.print_help()
+        raise
 
     port_list = []
     if args.port == 'all':
