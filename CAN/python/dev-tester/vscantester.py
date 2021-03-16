@@ -21,7 +21,7 @@ EXAMPLES = ('''\
             Examples
             --------
             Find all USB-CAN Plus devices:
-                python3 vscantester.py all
+                python3 vscantester.py
             Check a device behind /dev/ttyUSB0:
                 python3 vscantester.py /dev/ttyUSB0
             ''')
@@ -186,8 +186,11 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog=textwrap.dedent(EXAMPLES))
     parser.add_argument("port",
+                        nargs="?",
+                        default="all",
                         action="store",
-                        help="Serial port name or 'all'")
+                        help="Serial port name. If omitted, the tool "
+                             "will search for all available devices")
     try:
         args = parser.parse_args()
     except SystemExit:

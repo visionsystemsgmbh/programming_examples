@@ -26,7 +26,7 @@ saying what went wrong.
 
 You can also use `vscantester.py` to search for available VSCAN devices:
 
-    python vscantester.py all
+    python vscantester.py
 
 If the script fails to find any device, it will check for the presence of the
 `ftdi_sio.ko` driver in the system in Linux.
