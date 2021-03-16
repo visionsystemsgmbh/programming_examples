@@ -63,7 +63,11 @@ class UsbCan(object):
             print(err)
             return False
 
-        buf = self.ser_port.read(1)
+        try:
+            buf = self.ser_port.read(1)
+        except serial.serialutil.SerialException as err:
+            print(err)
+            return False
 
         if buf != VSCAN_KO and buf != VSCAN_OK:
             return False
