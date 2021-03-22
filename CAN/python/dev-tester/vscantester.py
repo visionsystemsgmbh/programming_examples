@@ -183,6 +183,18 @@ def find_ftdi_driver():
     return False
 
 
+def fix_port_type(port):
+    """
+    If a port is an IP address with a port number,
+    convert it to socket://...
+    """
+    tmp_port = port
+    if ":" in port:
+        tmp_port = f"socket://{port}"
+
+    return tmp_port
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester',
@@ -210,7 +222,7 @@ def main():
                 if not find_ftdi_driver():
                     print("FTDI driver is not available")
     else:
-        port_list.append(args.port)
+        port_list.append(fix_port_type(args.port))
 
     for item in port_list:
         usbcan = UsbCan(item)
