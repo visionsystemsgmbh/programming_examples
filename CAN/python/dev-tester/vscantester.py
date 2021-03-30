@@ -39,6 +39,12 @@ EXAMPLES = ('''\
                 python3 vscantester.py -u
             Receive CAN frames at 100000b/s:
                 python3 vscantester.py -r -b 100000 /dev/ttyUSB0
+            Send a single CAN frame at 100000b/s:
+                python3 vscantester.py -t single -b 100000 /dev/ttyUSB0
+            Send the same CAN frame continuously at 100000b/s:
+                python3 vscantester.py -t same -b 100000 /dev/ttyUSB0
+            Send a CAN frame continuously with incrementing last data byte at 100000b/s:
+                python3 vscantester.py -t inc -b 100000 /dev/ttyUSB0
             ''')
 
 
@@ -347,7 +353,7 @@ def get_system_info():
 
 
 def receive_can_frames(port, bitrate):
-    """Receive CAN frame."""
+    """Receive CAN frames."""
     try:
         bus = can.interface.Bus(bustype='slcan',
                                 channel=f"{port}@3000000",
@@ -369,6 +375,45 @@ def receive_can_frames(port, bitrate):
     bus.shutdown()
 
 
+def send_can_frames(port, bitrate, mode):
+    """Send CAN frames."""
+    try:
+        bus = can.interface.Bus(bustype='slcan',
+                                channel=f"{port}@3000000",
+                                rtscts=True,
+                                bitrate=bitrate)
+    except serial.serialutil.SerialException as err:
+        print(err)
+        sys.exit(1)
+
+    if mode == 'single':
+        print("Sinding a sinlge CAN frame")
+        msg = can.Message(arbitration_id=0x100,
+                          extended_id=False,
+                          data=[0x00, 0x01, 0x02, 0x03])
+        bus.send(msg)
+    elif mode == 'same':
+        print("Sinding the same CAN frame every 500ms")
+        msg = can.Message(arbitration_id=0x100,
+                          extended_id=False,
+                          data=[0x00, 0x01, 0x02, 0x03])
+        while True:
+            bus.send(msg)
+            time.sleep(0.5)
+    elif mode == 'inc':
+        print("Sinding a CAN frame with incrementing last byte every 500ms")
+        msg = can.Message(arbitration_id=0x100,
+                          extended_id=False,
+                          data=[0x00, 0x01, 0x02, 0x03])
+        while True:
+            if msg.data[3] == 0xff:
+                msg.data[3] = 0
+            else:
+                msg.data[3] = msg.data[3] + 1
+            bus.send(msg)
+            time.sleep(0.5)
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester',
@@ -385,6 +430,10 @@ def main():
                         help="CAN bitrate",
                         type=int,
                         default=1000000)
+    parser.add_argument("-tx", "--tx",
+                        help="Transmit CAN frame(s) mode",
+                        choices=['single', 'same', 'inc'],
+                        default=None)
     if sys.platform.startswith('linux'):
         parser.add_argument("-s", "--system",
                             help="Get system information (Linux only)",
@@ -426,6 +475,14 @@ def main():
             sys.exit(1)
         else:
             receive_can_frames(fix_port_type(args.port), args.bitrate)
+
+    if args.tx:
+        if args.port == 'all':
+            print("Please specify a port")
+            sys.exit(1)
+        else:
+            send_can_frames(fix_port_type(args.port), args.bitrate, args.tx)
+            sys.exit(0)
 
     for item in port_list:
         usbcan = UsbCan(item)

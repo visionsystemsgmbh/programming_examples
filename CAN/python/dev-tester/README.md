@@ -2,12 +2,14 @@ VSCAN Device Tester
 ===================
 
 This is a small utility that checks whether a device behind a given
-serial port is a VSCAN device.
+serial port is a VSCAN device, sends and receives CAN frames and
+displays the relevant system information.
 
 Requirements
 ------------
 
-The script requires Python 3.6 or later, PySerial and netifaces modules.
+The script requires Python 3.6 or later, PySerial, python-can and
+netifaces modules.
 
     pip3 install pyserial netifaces python-can
 
@@ -44,6 +46,18 @@ related information:
 Receive CAN frames at 100000b/s:
 
     python vscantester.py -r -b 100000 /dev/ttyUSB0
+
+Send a single CAN frame at 100000b/s:
+
+    python vscantester.py -t single -b 100000 /dev/ttyUSB0
+
+Send the same CAN frame continuously at 100000b/s:
+
+    python vscantester.py -t same -b 100000 /dev/ttyUSB0
+
+Send a CAN frame continuously with incrementing last data byte at 100000b/s:
+
+    python vscantester.py -t inc -b 100000 /dev/ttyUSB0
 
 Convert the Script to an Executable in Windows (Experimental)
 ----------------------------------------------
