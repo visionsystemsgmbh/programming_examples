@@ -18,9 +18,10 @@ import xml.etree.ElementTree as ET
 from subprocess import PIPE, Popen
 
 import can
-import netifaces
 import serial
 import serial.tools.list_ports
+
+import netifaces
 
 VSCAN_OK = b'\r'
 VSCAN_KO = b'\x07'
@@ -36,7 +37,7 @@ EXAMPLES = ('''\
                 python3 vscantester.py /dev/ttyUSB0
             Find all NetCAN Plus devices:
                 python3 vscantester.py -u
-            Receive CAN frames:
+            Receive CAN frames at 100000b/s:
                 python3 vscantester.py -r -b 100000 /dev/ttyUSB0
             ''')
 
@@ -315,7 +316,7 @@ def ssdp_discover():
 
 
 def show_driver_info(drv_name, drv_info):
-    """Show driver inforamtion."""
+    """Show driver information."""
     if drv_info['state'] == 'na':
         print(f"{drv_name}.ko not found on the system")
     elif drv_info['state'] == 'builtin':
