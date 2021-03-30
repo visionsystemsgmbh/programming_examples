@@ -225,42 +225,49 @@ def find_port(port):
                 print(f"Device description is wrong: {item.description}")
 
 
-def check_lsmod():
+def check_lsmod(driver):
     """Invoke lsmod and check for ftdi_sio driver."""
     proc = Popen(["lsmod"], stdout=PIPE, stderr=PIPE)
     output = proc.communicate()[0]
     for line in output.decode('ascii').split('\n'):
-        if "ftdi_sio" in line:
+        if driver in line:
             return True
 
     return False
 
 
-def find_ftdi_driver():
-    """Check whether ftdi_sio is available on the system."""
-    if check_lsmod():
-        print("ftdi_sio is loaded")
-        return True
+def find_file(path, drv_file_name):
+    """Find file."""
+    for root, dirs, files in os.walk(path):
+        if drv_file_name in files:
+            return os.path.join(root, drv_file_name)
 
-    # get kernel version
-    proc = Popen(["uname", "-r"], stdout=PIPE, stderr=PIPE)
-    output = proc.communicate()[0]
-    kernel_ver = output.decode('ascii').split('\n')[0]
+    return None
 
-    # check if ftdi_sio.ko is in rootfs
-    if os.path.isfile(
-            f"/lib/modules/{kernel_ver}/kernel/drivers/usb/serial/ftdi_sio.ko"):
-        print("ftdi_sio could be found in /lib/modules")
-        return True
 
-    # check if FTDI driver is builtin
+def find_driver(kernel_ver, drv_name):
+    """Check whether slcan is available on the system."""
+    drv_info = {'loaded': False, 'state': 'na'}
+
+    if check_lsmod(drv_name):
+        drv_info['loaded'] = True
+
+    # check if the driver is in rootfs
+    drv_path = find_file(f"/lib/modules/{kernel_ver}/kernel/drivers",
+                         f"{drv_name}.ko")
+    if drv_path:
+        drv_info['state'] = 'module'
+        drv_info['path'] = drv_path
+        return drv_info
+
+    # check if the driver is builtin
     with open(f"/lib/modules/{kernel_ver}/modules.builtin", "r") as mods:
         for line in mods:
-            if "ftdi_sio.ko" in line:
-                print("ftdi_sio is builtin")
-                return True
+            if f"{drv_name}.ko" in line:
+                drv_info['state'] = 'builtin'
+                break
 
-    return False
+    return drv_info
 
 
 def fix_port_type(port):
@@ -304,6 +311,37 @@ def ssdp_discover():
                   f"(SN: {msg['sernum']}, FW: {msg['fw']}, HW: {msg['hw']})")
 
 
+def show_driver_info(drv_name, drv_info):
+    """Show driver inforamtion."""
+    if drv_info['state'] == 'na':
+        print(f"{drv_name}.ko not found on the system")
+    elif drv_info['state'] == 'builtin':
+        print(f"{drv_name}.ko is builtin")
+    else:
+        if drv_info['loaded']:
+            print(f"{drv_name}.ko is a module and is loaded")
+            print(drv_info['path'])
+        else:
+            print(f"{drv_name}.ko is a module and is not loaded")
+            print(drv_info['path'])
+
+
+def get_system_info():
+    """Get system information."""
+    # get kernel version
+    proc = Popen(["uname", "-r"], stdout=PIPE, stderr=PIPE)
+    output = proc.communicate()[0]
+    kernel_ver = output.decode('ascii').split('\n')[0]
+
+    print(f"Kernel: {kernel_ver}")
+
+    drv_info = find_driver(kernel_ver, "ftdi_sio")
+    show_driver_info("ftdi_sio", drv_info)
+
+    drv_info = find_driver(kernel_ver, "slcan")
+    show_driver_info("slcan", drv_info)
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester',
@@ -313,6 +351,10 @@ def main():
     parser.add_argument("-u", "--upnp",
                         help="Perform UPnP/SSDP search",
                         action='store_true')
+    if sys.platform.startswith('linux'):
+        parser.add_argument("-s", "--system",
+                            help="Get system information (Linux only)",
+                            action='store_true')
     parser.add_argument("port",
                         nargs="?",
                         default="all",
@@ -329,14 +371,18 @@ def main():
         ssdp_discover()
         os._exit(0)
 
+    if sys.platform.startswith('linux'):
+        if args.system:
+            get_system_info()
+            sys.exit(0)
+
     port_list = []
     if args.port == 'all':
         port_list = find_all_usb_can_devices()
         if not port_list:
             print("No USB-CAN devices found")
             if sys.platform.startswith('linux'):
-                if not find_ftdi_driver():
-                    print("FTDI driver is not available")
+                get_system_info()
     else:
         port_list.append(fix_port_type(args.port))
 

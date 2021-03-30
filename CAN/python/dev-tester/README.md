@@ -36,6 +36,11 @@ to allow this script to listen on a special UDP port):
 
     python vscantester.py -u
 
+On Linux you can get the system information showing the kernel version and driver
+related information:
+
+    python vscantester.py -s
+
 Convert the Script to an Executable in Windows (Experimental)
 ----------------------------------------------
 
