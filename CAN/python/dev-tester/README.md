@@ -36,12 +36,12 @@ to allow this script to listen on a special UDP port):
 
     python vscantester.py -u
 
-Convert the Script to an Executable in Windows
+Convert the Script to an Executable in Windows (Experimental)
 ----------------------------------------------
 
 You can convert the script to a stand-alone executable using PyInstaller:
 
-    pip3 install pyserial pyinstaller
+    pip3 install pyserial netifaces pyinstaller
     pyinstaller --onefile vscantester.py
 
 The `exe` can be found in the `dist` folder.
