@@ -9,7 +9,7 @@ Requirements
 
 The script requires Python 3.6 or later, PySerial and netifaces modules.
 
-    pip3 install pyserial netifaces
+    pip3 install pyserial netifaces python-can
 
 Usage
 -----
@@ -41,12 +41,16 @@ related information:
 
     python vscantester.py -s
 
+Receive CAN frames at 100000b/s:
+
+    python vscantester.py -r -b 100000 /dev/ttyUSB0
+
 Convert the Script to an Executable in Windows (Experimental)
 ----------------------------------------------
 
 You can convert the script to a stand-alone executable using PyInstaller:
 
-    pip3 install pyserial netifaces pyinstaller
+    pip3 install pyserial netifaces python-can pyinstaller
     pyinstaller --onefile vscantester.py
 
 The `exe` can be found in the `dist` folder.

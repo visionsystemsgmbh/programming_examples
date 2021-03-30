@@ -17,6 +17,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from subprocess import PIPE, Popen
 
+import can
 import netifaces
 import serial
 import serial.tools.list_ports
@@ -35,6 +36,8 @@ EXAMPLES = ('''\
                 python3 vscantester.py /dev/ttyUSB0
             Find all NetCAN Plus devices:
                 python3 vscantester.py -u
+            Receive CAN frames:
+                python3 vscantester.py -r -b 100000 /dev/ttyUSB0
             ''')
 
 
@@ -342,6 +345,29 @@ def get_system_info():
     show_driver_info("slcan", drv_info)
 
 
+def receive_can_frames(port, bitrate):
+    """Receive CAN frame."""
+    try:
+        bus = can.interface.Bus(bustype='slcan',
+                                channel=f"{port}@3000000",
+                                rtscts=True,
+                                bitrate=bitrate)
+    except serial.serialutil.SerialException as err:
+        print(err)
+        sys.exit(1)
+
+    print("Ready to receive:")
+
+    while True:
+        msg = bus.recv()
+        data = "".join("{:02X} ".format(byte) for byte in msg.data)
+        print("{:X} [{}] {}".format(msg.arbitration_id,
+                                    msg.dlc,
+                                    data))
+
+    bus.shutdown()
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester',
@@ -351,6 +377,13 @@ def main():
     parser.add_argument("-u", "--upnp",
                         help="Perform UPnP/SSDP search",
                         action='store_true')
+    parser.add_argument("-r", "--rx",
+                        help="Receive CAN messages",
+                        action='store_true')
+    parser.add_argument("-b", "--bitrate",
+                        help="CAN bitrate",
+                        type=int,
+                        default=1000000)
     if sys.platform.startswith('linux'):
         parser.add_argument("-s", "--system",
                             help="Get system information (Linux only)",
@@ -385,6 +418,13 @@ def main():
                 get_system_info()
     else:
         port_list.append(fix_port_type(args.port))
+
+    if args.rx:
+        if args.port == 'all':
+            print("Please specify a port")
+            sys.exit(1)
+        else:
+            receive_can_frames(fix_port_type(args.port), args.bitrate)
 
     for item in port_list:
         usbcan = UsbCan(item)
