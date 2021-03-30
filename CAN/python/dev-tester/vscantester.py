@@ -7,15 +7,24 @@ CAN device tester.
 
 import argparse
 import os.path
+import queue
+import socket
 import sys
 import textwrap
+import threading
+import time
+import urllib.request
+import xml.etree.ElementTree as ET
 from subprocess import PIPE, Popen
 
+import netifaces
 import serial
 import serial.tools.list_ports
 
 VSCAN_OK = b'\r'
 VSCAN_KO = b'\x07'
+MCAST_GRP = '239.255.255.250'
+MCAST_PORT = 1900
 
 EXAMPLES = ('''\
             Examples
@@ -24,7 +33,78 @@ EXAMPLES = ('''\
                 python3 vscantester.py
             Check a device behind /dev/ttyUSB0:
                 python3 vscantester.py /dev/ttyUSB0
+            Find all NetCAN Plus devices:
+                python3 vscantester.py -u
             ''')
+
+
+class SsdpListener(threading.Thread):
+    """SSDP listener."""
+
+    def __init__(self, iface, dev_queue):
+        threading.Thread.__init__(self)
+        self.iface = iface
+        self.dev_queue = dev_queue
+        self.sock = socket.socket(socket.AF_INET,
+                                  socket.SOCK_DGRAM,
+                                  socket.IPPROTO_UDP)
+        self.sock.setsockopt(socket.SOL_SOCKET,
+                             socket.SO_REUSEADDR, 1)
+
+    def bind(self):
+        """Bind to specified interface and multicast group."""
+        self.sock.bind(('', MCAST_PORT))
+        mreq = socket.inet_aton(
+            MCAST_GRP) + socket.inet_aton(self.iface)
+        self.sock.setsockopt(socket.IPPROTO_IP,
+                             socket.IP_ADD_MEMBERSHIP, mreq)
+        self.sock.settimeout(10)
+        self.sock.setsockopt(socket.IPPROTO_IP,
+                             socket.IP_MULTICAST_IF,
+                             socket.inet_aton(self.iface))
+
+    def get_xml_tag(self, child, tag):
+        """Get XML tag from device description."""
+        for item in child:
+            if item.tag == tag:
+                return item.text
+
+    def parse_xml(self, text):
+        """Extract freindlyName and check if it is NET-CAN."""
+        dev = dict()
+        root = ET.fromstring(text)
+        for child in root:
+            if child.tag == "{urn:schemas-upnp-org:device-1-0}device":
+                for item in child:
+                    if item.tag == "{urn:schemas-upnp-org:device-1-0}friendlyName":
+                        if "NET-CAN" in item.text:
+                            dev['model'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}modelName")
+                            dev['fw'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}firmWareVersionNumber")
+                            dev['hw'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}hardWareVersionNumber")
+                            dev['sernum'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}serialNumber")
+                            return dev
+
+        return None
+
+    def run(self):
+        """Watch for SSDP messages."""
+        self.bind()
+        while True:
+            try:
+                buf, addr = self.sock.recvfrom(1024)
+            except socket.timeout:
+                continue
+            if b"devinfo.xml" in buf:
+                location_idx = buf.find(b"LOCATION:")
+                location_end_idx = buf.find(b"xml", location_idx)
+                url = buf[location_idx + 9:location_end_idx + 3]
+                response = urllib.request.urlopen(url.decode("utf-8"))
+                data = response.read()
+                text = data.decode('utf-8')
+                dev = self.parse_xml(text)
+                if dev:
+                    dev['ip'] = addr[0]
+                    self.dev_queue.put(dev)
 
 
 class UsbCan(object):
@@ -195,12 +275,44 @@ def fix_port_type(port):
     return tmp_port
 
 
+def ssdp_discover():
+    """Discover NetCAN Plus devices."""
+    dev_queue = queue.Queue()
+    ssdp_listeners = []
+    netcans = []
+    ifs = netifaces.interfaces()
+    for item in ifs:
+        addrs = netifaces.ifaddresses(item)
+        try:
+            ssdp_item = SsdpListener(addrs[netifaces.AF_INET][0]["addr"],
+                                     dev_queue)
+            ssdp_item.start()
+            ssdp_listeners.append(ssdp_item)
+        except KeyError:
+            pass
+
+    print(f"{len(ssdp_listeners)} SSDP threads started.")
+    t_end = time.time() + 10
+    while time.time() < t_end:
+        try:
+            msg = dev_queue.get(block=True, timeout=0.1)
+        except queue.Empty:
+            continue
+        if msg not in netcans:
+            netcans.append(msg)
+            print(f"NetCAN {msg['model']}({msg['ip']}) -> "
+                  f"(SN: {msg['sernum']}, FW: {msg['fw']}, HW: {msg['hw']})")
+
+
 def main():
     """main routine."""
     parser = argparse.ArgumentParser(description='VSCAN device tester',
                                      usage=argparse.SUPPRESS,
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
                                      epilog=textwrap.dedent(EXAMPLES))
+    parser.add_argument("-u", "--upnp",
+                        help="Perform UPnP/SSDP search",
+                        action='store_true')
     parser.add_argument("port",
                         nargs="?",
                         default="all",
@@ -212,6 +324,10 @@ def main():
     except SystemExit:
         parser.print_help()
         raise
+
+    if args.upnp:
+        ssdp_discover()
+        os._exit(0)
 
     port_list = []
     if args.port == 'all':

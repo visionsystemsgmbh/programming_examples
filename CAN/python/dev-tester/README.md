@@ -7,9 +7,9 @@ serial port is a VSCAN device.
 Requirements
 ------------
 
-The script requires Python 3.6 or later and a PySerial module.
+The script requires Python 3.6 or later, PySerial and netifaces modules.
 
-    pip3 install pyserial
+    pip3 install pyserial netifaces
 
 Usage
 -----
@@ -30,6 +30,11 @@ You can also use `vscantester.py` to search for available VSCAN devices:
 
 If the script fails to find any device, it will check for the presence of the
 `ftdi_sio.ko` driver in the system in Linux.
+
+To search for the NetCAN Plus devices, invoke (under Windows you'll be asked
+to allow this script to listen on a special UDP port):
+
+    python vscantester.py -u
 
 Convert the Script to an Executable in Windows
 ----------------------------------------------
