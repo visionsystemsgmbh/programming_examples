@@ -13,6 +13,16 @@ netifaces modules.
 
     pip3 install pyserial netifaces python-can
 
+Installation
+------------
+
+Clone the git repository:
+
+1. `git clone https://github.com/visionsystemsgmbh/programming_examples`
+2. change to `CAN/python/dev-tester`
+    
+Now you can invoke `python` to execute the ``vscantester.py` script.
+
 Usage
 -----
 
@@ -20,7 +30,7 @@ Usage
 
 or
 
-    python vscantester.py /dev/COM5
+    python vscantester.py COM5
 
 If the device is a correctly functioning VSCAN device, you'll get its
 serial number otherwise, the program will return an error message
