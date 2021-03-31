@@ -21,7 +21,7 @@ Clone the git repository:
 1. `git clone https://github.com/visionsystemsgmbh/programming_examples`
 2. change to `CAN/python/dev-tester`
     
-Now you can invoke `python` to execute the ``vscantester.py` script.
+Now you can invoke `python` to execute the `vscantester.py` script.
 
 Usage
 -----
