@@ -70,11 +70,13 @@ Send a CAN frame continuously with incrementing last data byte at 100000b/s:
     python vscantester.py -t inc -b 100000 /dev/ttyUSB0
 
 Convert the Script to an Executable in Windows (Experimental)
-----------------------------------------------
+------------------------------------------------------------
 
 You can convert the script to a stand-alone executable using PyInstaller:
 
     pip3 install pyserial netifaces python-can pyinstaller
-    pyinstaller --onefile vscantester.py
+    pyinstaller --hidden-import serial.urlhandler.protocol_socket ^
+		--hidden-import can.interfaces.slcan ^
+		--onefile vscantester.py
 
 The `exe` can be found in the `dist` folder.
