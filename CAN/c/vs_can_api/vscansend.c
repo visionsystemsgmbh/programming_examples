@@ -11,6 +11,27 @@
 		goto error; \
 	} while(0)
 
+void dump_error_flags(const DWORD flags)
+{
+	printf("The following errors occurred:\n");
+	if (flags & VSCAN_IOCTL_FLAG_RX_FIFO_FULL)
+		printf("VSCAN_IOCTL_FLAG_RX_FIFO_FULL\n");
+	if (flags & VSCAN_IOCTL_FLAG_TX_FIFO_FULL)
+		printf("VSCAN_IOCTL_FLAG_TX_FIFO_FULL\n");
+	if (flags & VSCAN_IOCTL_FLAG_ERR_WARNING)
+		printf("VSCAN_IOCTL_FLAG_ERR_WARNING\n");
+	if (flags & VSCAN_IOCTL_FLAG_DATA_OVERRUN)
+		printf("VSCAN_IOCTL_FLAG_DATA_OVERRUN\n");
+	if (flags & VSCAN_IOCTL_FLAG_ERR_PASSIVE)
+		printf("VSCAN_IOCTL_FLAG_ERR_PASSIVE\n");
+	if (flags & VSCAN_IOCTL_FLAG_ARBIT_LOST)
+		printf("VSCAN_IOCTL_FLAG_ARBIT_LOST\n");
+	if (flags & VSCAN_IOCTL_FLAG_BUS_ERROR)
+		printf("VSCAN_IOCTL_FLAG_BUS_ERROR\n");
+	if (flags & VSCAN_IOCTL_FLAG_API_RX_FIFO_FULL)
+		printf("VSCAN_IOCTL_FLAG_API_RX_FIFO_FULL\n");
+}
+
 int main (int argc, char *argv[])
 {
 	char *tty;
@@ -19,6 +40,7 @@ int main (int argc, char *argv[])
 	VSCAN_API_VERSION version;
 	DWORD rv;
 	DWORD bitrate;
+	DWORD flags;
 
 	if (VSCAN_Ioctl(0, VSCAN_IOCTL_GET_API_VERSION, &version))
 		GOTO_ERROR("Failed to get API version");
@@ -83,6 +105,13 @@ int main (int argc, char *argv[])
 		GOTO_ERROR("VSCAN_Write failed");
 	if (VSCAN_Flush(h) != VSCAN_ERR_OK)
 		GOTO_ERROR("VSCAN_Flush failed");
+
+	if (VSCAN_Ioctl(h, VSCAN_IOCTL_GET_FLAGS, &flags) != VSCAN_ERR_OK)
+		GOTO_ERROR("VSCAN_Ioctl VSCAN_IOCTL_GET_FLAGS failed");
+
+	/* check CAN error flags */
+	if (flags)
+		dump_error_flags(flags);
 
 #if defined(__unix__)
 	sleep(1);
