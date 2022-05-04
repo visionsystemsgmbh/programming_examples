@@ -1,0 +1,131 @@
+[
+    {
+        "id": "fb852bd4cfd066d3",
+        "type": "inject",
+        "z": "7efa8df57a7ed5cd",
+        "name": "Inject Test Frame",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 160,
+        "y": 330,
+        "wires": [
+            [
+                "59ec4985045661e3"
+            ]
+        ]
+    },
+    {
+        "id": "59ec4985045661e3",
+        "type": "function",
+        "z": "7efa8df57a7ed5cd",
+        "name": "ASCII Commands",
+        "func": "msg.payload = \"T000001113102030\\r\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 330,
+        "wires": [
+            [
+                "9c6750c95eb817da"
+            ]
+        ]
+    },
+    {
+        "id": "22035d37a535705e",
+        "type": "function",
+        "z": "7efa8df57a7ed5cd",
+        "name": "ASCII Commands",
+        "func": "msg.payload = \"C\\rS8\\rO\\r\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 260,
+        "wires": [
+            [
+                "9c6750c95eb817da"
+            ]
+        ]
+    },
+    {
+        "id": "a5dff159f3477d5b",
+        "type": "inject",
+        "z": "7efa8df57a7ed5cd",
+        "name": "Config CAN Channel",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "22035d37a535705e"
+            ]
+        ]
+    },
+    {
+        "id": "9c6750c95eb817da",
+        "type": "tcp request",
+        "z": "7efa8df57a7ed5cd",
+        "server": "localhost",
+        "port": "2001",
+        "out": "sit",
+        "splitc": " ",
+        "name": "",
+        "x": 590,
+        "y": 295,
+        "wires": [
+            [
+                "df7493d6eb809af1"
+            ]
+        ]
+    },
+    {
+        "id": "037949296c9908db",
+        "type": "debug",
+        "z": "7efa8df57a7ed5cd",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "df7493d6eb809af1",
+        "type": "function",
+        "z": "7efa8df57a7ed5cd",
+        "name": "Convert to String",
+        "func": "msg.payload = msg.payload.toString();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 400,
+        "wires": [
+            [
+                "037949296c9908db"
+            ]
+        ]
+    }
+]
