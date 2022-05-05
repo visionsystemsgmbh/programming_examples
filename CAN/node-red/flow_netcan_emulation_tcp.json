@@ -1,0 +1,108 @@
+[
+    {
+        "id": "fdb1bf65.a0e44",
+        "type": "socketcan-out",
+        "z": "1c44fa93.633f45",
+        "name": "socketcan-out",
+        "config": "4495d040.ad577",
+        "x": 495,
+        "y": 540,
+        "wires": [
+            [
+                "4f239ecb5612ca15"
+            ]
+        ]
+    },
+    {
+        "id": "dce3db57.c07fb8",
+        "type": "socketcan-in",
+        "z": "1c44fa93.633f45",
+        "name": "socketcan-in",
+        "config": "4495d040.ad577",
+        "x": 945,
+        "y": 450,
+        "wires": []
+    },
+    {
+        "id": "47993ecf71de682d",
+        "type": "tcp in",
+        "z": "1c44fa93.633f45",
+        "name": "",
+        "server": "server",
+        "host": "",
+        "port": "2001",
+        "datamode": "stream",
+        "datatype": "utf8",
+        "newline": "\\r",
+        "topic": "",
+        "base64": false,
+        "x": 505,
+        "y": 450,
+        "wires": [
+            [
+                "0cfd22015577b8c7"
+            ]
+        ]
+    },
+    {
+        "id": "ac0cef26506a2b04",
+        "type": "tcp out",
+        "z": "1c44fa93.633f45",
+        "host": "",
+        "port": "",
+        "beserver": "reply",
+        "base64": false,
+        "end": false,
+        "name": "",
+        "x": 965,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "4f239ecb5612ca15",
+        "type": "function",
+        "z": "1c44fa93.633f45",
+        "name": "Convert Frame to ASCII",
+        "func": "\nfunction toHexString(byteArray) {\n  return Array.from(byteArray, function(byte) {\n    return ('0' + (byte & 0xFF).toString(16)).slice(-2);\n  }).join('')\n}\n\ncan = msg.payload;\n\nif (can.ext)\n    msg.payload  = `T${can.canid.toString(16).padStart(8, \"0\")}`;\nelse\n    msg.payload  = `t${can.canid.toString(16).padStart(3, \"0\")}`;\n\nmsg.payload += `${can.dlc.toString(16)}`;\n\nmsg.payload += toHexString(can.data) + `\\r`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 540,
+        "wires": [
+            [
+                "ac0cef26506a2b04"
+            ]
+        ]
+    },
+    {
+        "id": "0cfd22015577b8c7",
+        "type": "function",
+        "z": "1c44fa93.633f45",
+        "name": "Convert ASCII to Frame",
+        "func": "function hexToBytes(hex) {\n    for (var bytes = [], c = 0; c < hex.length; c += 2)\n        bytes.push(parseInt(hex.substr(c, 2), 16));\n    return bytes;\n}\n\ncmd = msg.payload;\n\nif (cmd.charAt(0).toUpperCase() === 'T')\n{\n    can = { canfd: false, rtr: false };\n    \n    if (cmd.charAt(0) === 'T') // extended frame\n    {\n        can.ext = true;\n        can.canid = Number('0x' + cmd.substring(1, 9));\n        can.dlc = Number('0x' + cmd.substring(9, 10));\n        can.data = hexToBytes(cmd.substring(10));\n        answer = 'Z\\r';\n    }\n    else // standard frame\n    {\n        can.ext = false;\n        can.canid = Number('0x' + cmd.substring(1, 4));\n        can.dlc = Number('0x' + cmd.substring(4, 5));\n        can.data = hexToBytes(cmd.substring(5));\n        answer = 'z\\r';\n    }\n    \n    msg =  { payload: can };\n    msg2 = { payload: answer };\n    return [msg, msg2]\n}\nelse if (cmd.toUpperCase() === 'V')\n    answer = 'V1010\\r';\nelse if (cmd.toUpperCase() === 'N')\n    answer = 'N12345678\\r'\nelse if (cmd.toUpperCase() === 'F')\n    answer = 'F00\\r'\nelse if (cmd.toUpperCase() === 'O' || cmd.toUpperCase() === 'C' ||\n         cmd.charAt(0).toUpperCase() === 'S' ||\n         cmd.charAt(0).toUpperCase() === 'M')\n    answer = '\\r'\nelse\n    answer = '\\b\\r'; // error status\n\nmsg.payload = answer;\nreturn [null, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 450,
+        "wires": [
+            [
+                "dce3db57.c07fb8"
+            ],
+            [
+                "ac0cef26506a2b04"
+            ]
+        ]
+    },
+    {
+        "id": "4495d040.ad577",
+        "type": "socketcan-config",
+        "interface": "can0",
+        "bitrate": "1000000"
+    }
+]
