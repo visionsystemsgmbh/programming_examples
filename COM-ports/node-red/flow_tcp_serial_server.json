@@ -1,0 +1,80 @@
+[
+    {
+        "id": "47993ecf71de682d",
+        "type": "tcp in",
+        "z": "248a4fbb7b071e97",
+        "name": "",
+        "server": "server",
+        "host": "",
+        "port": "2001",
+        "datamode": "stream",
+        "datatype": "buffer",
+        "newline": "",
+        "topic": "",
+        "base64": false,
+        "x": 175,
+        "y": 275,
+        "wires": [
+            [
+                "685668cf36f41a22"
+            ]
+        ]
+    },
+    {
+        "id": "ac0cef26506a2b04",
+        "type": "tcp out",
+        "z": "248a4fbb7b071e97",
+        "host": "",
+        "port": "",
+        "beserver": "reply",
+        "base64": false,
+        "end": false,
+        "name": "",
+        "x": 370,
+        "y": 335,
+        "wires": []
+    },
+    {
+        "id": "685668cf36f41a22",
+        "type": "serial out",
+        "z": "248a4fbb7b071e97",
+        "name": "",
+        "serial": "e3a5825ec52672aa",
+        "x": 390,
+        "y": 275,
+        "wires": []
+    },
+    {
+        "id": "44a1a9a343d8a38e",
+        "type": "serial in",
+        "z": "248a4fbb7b071e97",
+        "name": "",
+        "serial": "e3a5825ec52672aa",
+        "x": 165,
+        "y": 335,
+        "wires": [
+            [
+                "ac0cef26506a2b04"
+            ]
+        ]
+    },
+    {
+        "id": "e3a5825ec52672aa",
+        "type": "serial-port",
+        "serialport": "/dev/ttyVS0",
+        "serialbaud": "115200",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    }
+]
