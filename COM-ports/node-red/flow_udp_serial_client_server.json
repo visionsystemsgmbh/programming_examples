@@ -1,0 +1,80 @@
+[
+    {
+        "id": "4fc903fc1e31e5e2",
+        "type": "udp in",
+        "z": "5a9e770832a12d81",
+        "name": "",
+        "iface": "",
+        "port": "2002",
+        "ipv": "udp4",
+        "multicast": "false",
+        "group": "",
+        "datatype": "buffer",
+        "x": 180,
+        "y": 405,
+        "wires": [
+            [
+                "4737a66b8ba1b0e4"
+            ]
+        ]
+    },
+    {
+        "id": "4737a66b8ba1b0e4",
+        "type": "serial out",
+        "z": "5a9e770832a12d81",
+        "name": "",
+        "serial": "e3a5825ec52672aa",
+        "x": 390,
+        "y": 405,
+        "wires": []
+    },
+    {
+        "id": "2914a5b6395e6b3c",
+        "type": "serial in",
+        "z": "5a9e770832a12d81",
+        "name": "",
+        "serial": "e3a5825ec52672aa",
+        "x": 170,
+        "y": 475,
+        "wires": [
+            [
+                "0ddefeba31c48b2d"
+            ]
+        ]
+    },
+    {
+        "id": "0ddefeba31c48b2d",
+        "type": "udp out",
+        "z": "5a9e770832a12d81",
+        "name": "",
+        "addr": "192.168.1.37",
+        "iface": "",
+        "port": "2002",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 430,
+        "y": 475,
+        "wires": []
+    },
+    {
+        "id": "e3a5825ec52672aa",
+        "type": "serial-port",
+        "serialport": "/dev/ttyVS0",
+        "serialbaud": "115200",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "10",
+        "bin": "bin",
+        "out": "time",
+        "addchar": "",
+        "responsetimeout": "10000"
+    }
+]
