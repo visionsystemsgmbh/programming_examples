@@ -30,11 +30,13 @@ int main (int argc, char *argv[])
 	char *tty;
 	VSCAN_MSG msg;
 	VSCAN_HANDLE h = -1;
+	VSCAN_STATUS status;
 	VSCAN_API_VERSION version;
+	VSCAN_KEEP_ALIVE KeepAliveConf;
 	DWORD rv;
 	DWORD bitrate;
 
-	/* configure the default debug options*/
+	/* configure the default debug options */
 	if (VSCAN_Ioctl(0, VSCAN_IOCTL_SET_DEBUG_MODE, VSCAN_DEBUG_MODE_CONSOLE))
 		GOTO_ERROR("Failed to set debug mode");
 	if (VSCAN_Ioctl(0, VSCAN_IOCTL_SET_DEBUG, VSCAN_DEBUG_NONE))
@@ -64,9 +66,19 @@ int main (int argc, char *argv[])
 	if (h <= 0)
 		GOTO_ERROR("VSCAN_Open failed for %s with %d", tty, h);
 	if (VSCAN_Ioctl(h, VSCAN_IOCTL_SET_BLOCKING_READ, VSCAN_IOCTL_ON) != VSCAN_ERR_OK)
-		GOTO_ERROR("Set blocking read failed");
+		GOTO_ERROR("Setting blocking read failed");
 	if (VSCAN_Ioctl(h, VSCAN_IOCTL_SET_SPEED, (void*)bitrate) != VSCAN_ERR_OK)
 		GOTO_ERROR("Setting CAN speed failed");
+
+	/* activate KeepAlive function to detect a broken TCP connection
+	 * (Only usable with NetCAN Plus devices) */
+	KeepAliveConf.OnOff = 1;
+	KeepAliveConf.KeepAliveTime = 30;
+	KeepAliveConf.KeepAliveInterval = 1;
+	KeepAliveConf.KeepAliveCnt = 5;
+	status = VSCAN_Ioctl(h, VSCAN_IOCTL_SET_KEEPALIVE, &KeepAliveConf);
+	if (status != VSCAN_ERR_OK && status != VSCAN_ERR_NOT_SUPPORTED)
+		GOTO_ERROR("Setting TCP KeepAlive failed");
 
 	for (;;)
 	{
