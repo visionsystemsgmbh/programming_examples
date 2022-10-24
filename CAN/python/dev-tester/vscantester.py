@@ -389,13 +389,13 @@ def send_can_frames(port, bitrate, mode):
     if mode == 'single':
         print("Sinding a sinlge CAN frame")
         msg = can.Message(arbitration_id=0x100,
-                          extended_id=False,
+                          is_extended_id=False,
                           data=[0x00, 0x01, 0x02, 0x03])
         bus.send(msg)
     elif mode == 'same':
         print("Sinding the same CAN frame every 500ms")
         msg = can.Message(arbitration_id=0x100,
-                          extended_id=False,
+                          is_extended_id=False,
                           data=[0x00, 0x01, 0x02, 0x03])
         while True:
             bus.send(msg)
@@ -403,7 +403,7 @@ def send_can_frames(port, bitrate, mode):
     elif mode == 'inc':
         print("Sinding a CAN frame with incrementing last byte every 500ms")
         msg = can.Message(arbitration_id=0x100,
-                          extended_id=False,
+                          is_extended_id=False,
                           data=[0x00, 0x01, 0x02, 0x03])
         while True:
             if msg.data[3] == 0xff:
