@@ -93,7 +93,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="NetCom/NetCAN Plus firmware update utility")
     parser.add_argument("-f", "--firmware",
-                        help="Update firmware",
+                        help="Update firmware (either *.b64 or *.zip file)",
                         required=True,
                         default=None)
     parser.add_argument('ip_addr', action='store', help='Device IP address')
