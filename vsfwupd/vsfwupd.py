@@ -11,9 +11,11 @@ import zipfile
 
 from pysnmp.hlapi import (CommunityData, ContextData, Integer, ObjectIdentity,
                           ObjectType, OctetString, SnmpEngine,
-                          UdpTransportTarget, setCmd)
+                          UdpTransportTarget, getCmd, setCmd)
 
 SNMP_CTRL = ".1.3.6.1.4.1.12695.1.10.0"
+SNMP_MODEL = ".1.3.6.1.4.1.12695.1.11.0"
+SNMP_FW_VER = ".1.3.6.1.4.1.12695.1.2.0"
 SNMP_CTRL_START_UPDATE = 3
 SNMP_CTRL_FINISH_UPDATE = 4
 
@@ -68,12 +70,47 @@ class SnmpManager():
         if error_str:
             raise VsSnmpError(error_str)
 
+    def read(self, oid):
+        """Read value."""
+        error_str = ''
+        error_indication, error_status, error_index, var_binds = next(
+            getCmd(SnmpEngine(),
+                   CommunityData('root', mpModel=0),
+                   UdpTransportTarget((self.ip_addr, 161), timeout=120),
+                   ContextData(),
+                   ObjectType(ObjectIdentity(oid)))
+        )
+
+        if error_indication:
+            error_str = error_indication
+        elif error_status:
+            error_str = ('%s at %s' % (
+                error_status.prettyPrint(),
+                error_index and var_binds[int(error_index) - 1][0] or '?'))
+        else:
+            for item in var_binds:
+                if self.verbose:
+                    print(item)
+
+        if error_str:
+            raise VsSnmpError(error_str)
+
+        return var_binds[0][1]
+
 
 def perform_fw_update(ip_addr, data):
     """Perform firmware update."""
 
     print("Starting firmware update")
     snmp_mgr = SnmpManager(ip_addr)
+    model = snmp_mgr.read(SNMP_MODEL)
+    fw_ver = int(snmp_mgr.read(SNMP_FW_VER))
+    fw_ver_patch = fw_ver & 0xff
+    fw_ver_minor = (fw_ver >> 8) & 0xff
+    fw_ver_major = (fw_ver >> 16) & 0xff
+    print(f"The following device was detected: {model} with "
+          f"firmware version {fw_ver_major}.{fw_ver_minor}.{fw_ver_patch}")
+
     snmp_mgr.write(SNMP_CTRL, SNMP_CTRL_START_UPDATE)
 
     print("Transferring firmware file")
