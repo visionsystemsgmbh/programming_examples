@@ -100,17 +100,25 @@ class SnmpManager():
 
 def perform_fw_update(ip_addr, data):
     """Perform firmware update."""
-
-    print("Starting firmware update")
     snmp_mgr = SnmpManager(ip_addr)
+
+    # get model
     model = snmp_mgr.read(SNMP_MODEL)
+    model_str = "NetCom"
+    if '110' in str(model):
+        model_str = "NetCAN"
+
+    # get version
     fw_ver = int(snmp_mgr.read(SNMP_FW_VER))
     fw_ver_patch = fw_ver & 0xff
     fw_ver_minor = (fw_ver >> 8) & 0xff
     fw_ver_major = (fw_ver >> 16) & 0xff
-    print(f"The following device was detected: {model} with "
+
+    # show device information
+    print(f"The following device was detected: {model_str} {model} with "
           f"firmware version {fw_ver_major}.{fw_ver_minor}.{fw_ver_patch}")
 
+    print("Starting firmware update")
     snmp_mgr.write(SNMP_CTRL, SNMP_CTRL_START_UPDATE)
 
     print("Transferring firmware file")
