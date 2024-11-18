@@ -1,0 +1,61 @@
+[
+    {
+        "id": "d490c7224ace84be",
+        "type": "tab",
+        "label": "Read Digital Inputs",
+        "disabled": false,
+        "info": "Read GPIOs, then mask outputs, and print only inputs.",
+        "env": []
+    },
+    {
+        "id": "d414373af24a586d",
+        "type": "onrisc-gpio-read",
+        "z": "d490c7224ace84be",
+        "name": "IOs",
+        "rate": "1000",
+        "x": 270,
+        "y": 120,
+        "wires": [
+            [
+                "3285c0830b8a145e"
+            ]
+        ]
+    },
+    {
+        "id": "fb39205212bef302",
+        "type": "debug",
+        "z": "d490c7224ace84be",
+        "name": "debug io",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3285c0830b8a145e",
+        "type": "function",
+        "z": "d490c7224ace84be",
+        "name": "Mask outputs",
+        "func": "var data = msg.payload;\nmsg.payload = data & 0xf;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 120,
+        "wires": [
+            [
+                "fb39205212bef302"
+            ]
+        ]
+    }
+]
