@@ -1,0 +1,34 @@
+[
+    {
+        "id": "84c6164d43e8024c",
+        "type": "tab",
+        "label": "WLAN LED and Switch",
+        "disabled": false,
+        "info": "Wire WLAN LED and WLAN switch together\r\nso that when the switch is on, the\r\nLED is also on, and vice versa.",
+        "env": []
+    },
+    {
+        "id": "c80dca208774d58a",
+        "type": "onrisc-led",
+        "z": "84c6164d43e8024c",
+        "name": "WLAN LED",
+        "led": "WLAN",
+        "x": 550,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "30fae3eeb9bb61b2",
+        "type": "onrisc-wlan-sw",
+        "z": "84c6164d43e8024c",
+        "name": "WLAN Switch",
+        "rate": "1000",
+        "x": 190,
+        "y": 140,
+        "wires": [
+            [
+                "c80dca208774d58a"
+            ]
+        ]
+    }
+]
