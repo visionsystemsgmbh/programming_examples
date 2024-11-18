@@ -1,1 +1,371 @@
-[{"id":"86e69d04.ca943","type":"tab","label":"Flow 1"},{"id":"8edc32a3.65914","type":"modbus-client","z":"","name":"baltoslocal","clienttype":"tcp","bufferCommands":true,"stateLogEnabled":true,"tcpHost":"127.0.0.1","tcpPort":"502","tcpType":"DEFAULT","serialPort":"/dev/ttyUSB","serialType":"RTU-BUFFERD","serialBaudrate":"9600","serialDatabits":"8","serialStopbits":"1","serialParity":"none","serialConnectionDelay":"100","unit_id":"1","commandDelay":"1","clientTimeout":"1000","reconnectTimeout":"2000"},{"id":"f4980403.a92e88","type":"ui_base","theme":{"name":"theme-light","lightTheme":{"default":"#0094CE","baseColor":"#0094CE","baseFont":"-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif","edited":true,"reset":false},"darkTheme":{"default":"#097479","baseColor":"#097479","baseFont":"-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif","edited":false},"customTheme":{"name":"Untitled Theme 1","default":"#4B7930","baseColor":"#4B7930","baseFont":"-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"},"themeState":{"base-color":{"default":"#0094CE","value":"#0094CE","edited":false},"page-titlebar-backgroundColor":{"value":"#0094CE","edited":false},"page-backgroundColor":{"value":"#fafafa","edited":false},"page-sidebar-backgroundColor":{"value":"#ffffff","edited":false},"group-textColor":{"value":"#1bbfff","edited":false},"group-borderColor":{"value":"#ffffff","edited":false},"group-backgroundColor":{"value":"#ffffff","edited":false},"widget-textColor":{"value":"#111111","edited":false},"widget-backgroundColor":{"value":"#0094ce","edited":false},"widget-borderColor":{"value":"#ffffff","edited":false},"base-font":{"value":"-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"}}},"site":{"name":"Node-RED Dashboard","hideToolbar":"false","allowSwipe":"false","dateFormat":"DD/MM/YYYY","sizes":{"sx":48,"sy":48,"gx":6,"gy":6,"cx":6,"cy":6,"px":0,"py":0}}},{"id":"2df1935a.3dcee4","type":"ui_tab","z":"","name":"Baltos Modbus GPIO Example","icon":"dashboard","order":1},{"id":"16f81fde.a213a","type":"ui_group","z":"","name":"Inputs","tab":"2df1935a.3dcee4","order":1,"disp":true,"width":"6"},{"id":"cba694a3.b143c8","type":"ui_group","z":"","name":"Outputs","tab":"2df1935a.3dcee4","order":1,"disp":true,"width":"6"},{"id":"e623b3b6.0ffbb","type":"modbus-read","z":"86e69d04.ca943","name":"input1","showStatusActivities":true,"showErrors":true,"unitid":"1","dataType":"Input","adr":"0","quantity":"4","rate":"1","rateUnit":"s","server":"8edc32a3.65914","x":270,"y":580,"wires":[["630a47c5.e02118"],[]]},{"id":"630a47c5.e02118","type":"function","z":"86e69d04.ca943","name":"modbus2bin","func":"var data = msg.payload;\nvar obj = [0, 0, 0, 0];\nvar i;\n\nfor (i = 0; i < 4; i++) {\n    if (data[i]) {\n        obj[i] = 1;\n    }\n}\n\nmsg.payload = obj\nreturn msg","outputs":"1","noerr":0,"x":510,"y":580,"wires":[["acbd77f.9768b88","b475ff81.e381f8","2ffd8274.70e6fe","7d9e4b81.60105c"]]},{"id":"acbd77f.9768b88","type":"ui_text","z":"86e69d04.ca943","group":"16f81fde.a213a","order":0,"width":0,"height":0,"name":"","label":"IN0","format":"{{msg.payload[0]}}","layout":"row-spread","x":930,"y":480,"wires":[]},{"id":"b475ff81.e381f8","type":"ui_text","z":"86e69d04.ca943","group":"16f81fde.a213a","order":0,"width":0,"height":0,"name":"","label":"IN1","format":"{{msg.payload[1]}}","layout":"row-spread","x":923,"y":519,"wires":[]},{"id":"2ffd8274.70e6fe","type":"ui_text","z":"86e69d04.ca943","group":"16f81fde.a213a","order":0,"width":0,"height":0,"name":"","label":"IN2","format":"{{msg.payload[2]}}","layout":"row-spread","x":928,"y":558,"wires":[]},{"id":"7d9e4b81.60105c","type":"ui_text","z":"86e69d04.ca943","group":"16f81fde.a213a","order":0,"width":0,"height":0,"name":"","label":"IN3","format":"{{msg.payload[3]}}","layout":"row-spread","x":923,"y":595,"wires":[]},{"id":"c90e6c9a.ce1f68","type":"modbus-write","z":"86e69d04.ca943","name":"output0","showStatusActivities":true,"showErrors":true,"unitid":"1","dataType":"Coil","adr":"4","quantity":"1","server":"8edc32a3.65914","x":520,"y":260,"wires":[[],[]]},{"id":"fbf609b3.fd9d58","type":"ui_switch","z":"86e69d04.ca943","name":"","label":"OUT0","group":"cba694a3.b143c8","order":0,"width":0,"height":0,"passthru":true,"decouple":"false","topic":"","style":"","onvalue":"true","onvalueType":"bool","onicon":"","oncolor":"","offvalue":"false","offvalueType":"bool","officon":"","offcolor":"","x":267,"y":259,"wires":[["c90e6c9a.ce1f68"]]},{"id":"bffc3cb6.828858","type":"ui_switch","z":"86e69d04.ca943","name":"","label":"OUT1","group":"cba694a3.b143c8","order":0,"width":0,"height":0,"passthru":true,"decouple":"false","topic":"","style":"","onvalue":"true","onvalueType":"bool","onicon":"","oncolor":"","offvalue":"false","offvalueType":"bool","officon":"","offcolor":"","x":270,"y":320,"wires":[["34190b54.240dc4"]]},{"id":"34190b54.240dc4","type":"modbus-write","z":"86e69d04.ca943","name":"output1","showStatusActivities":true,"showErrors":true,"unitid":"1","dataType":"Coil","adr":"5","quantity":"1","server":"8edc32a3.65914","x":520,"y":320,"wires":[[],[]]},{"id":"8c4469f7.406fe","type":"modbus-write","z":"86e69d04.ca943","name":"output2","showStatusActivities":true,"showErrors":true,"unitid":"1","dataType":"Coil","adr":"6","quantity":"1","server":"8edc32a3.65914","x":520,"y":380,"wires":[[],[]]},{"id":"a6836de6.1355c8","type":"ui_switch","z":"86e69d04.ca943","name":"","label":"OUT2","group":"cba694a3.b143c8","order":0,"width":0,"height":0,"passthru":true,"decouple":"false","topic":"","style":"","onvalue":"true","onvalueType":"bool","onicon":"","oncolor":"","offvalue":"false","offvalueType":"bool","officon":"","offcolor":"","x":267,"y":379,"wires":[["8c4469f7.406fe"]]},{"id":"db69511.adfa3b","type":"ui_switch","z":"86e69d04.ca943","name":"","label":"OUT3","group":"cba694a3.b143c8","order":0,"width":0,"height":0,"passthru":true,"decouple":"false","topic":"","style":"","onvalue":"true","onvalueType":"bool","onicon":"","oncolor":"","offvalue":"false","offvalueType":"bool","officon":"","offcolor":"","x":270,"y":440,"wires":[["54fa023c.66e52c"]]},{"id":"54fa023c.66e52c","type":"modbus-write","z":"86e69d04.ca943","name":"output3","showStatusActivities":true,"showErrors":true,"unitid":"1","dataType":"Coil","adr":"7","quantity":"1","server":"8edc32a3.65914","x":520,"y":440,"wires":[[],[]]}]
+[
+    {
+        "id": "86e69d04.ca943",
+        "type": "tab",
+        "label": "Modbus GPIO",
+        "disabled": false,
+        "info": "Control digital outputs and show digital\r\ninput using the Modbus protocol."
+    },
+    {
+        "id": "e623b3b6.0ffbb",
+        "type": "modbus-read",
+        "z": "86e69d04.ca943",
+        "name": "input1",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "unitid": "1",
+        "dataType": "Input",
+        "adr": "0",
+        "quantity": "4",
+        "rate": "1",
+        "rateUnit": "s",
+        "server": "8edc32a3.65914",
+        "x": 270,
+        "y": 580,
+        "wires": [
+            [
+                "630a47c5.e02118"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "630a47c5.e02118",
+        "type": "function",
+        "z": "86e69d04.ca943",
+        "name": "modbus2bin",
+        "func": "var data = msg.payload;\nvar obj = [0, 0, 0, 0];\nvar i;\n\nfor (i = 0; i < 4; i++) {\n    if (data[i]) {\n        obj[i] = 1;\n    }\n}\n\nmsg.payload = obj\nreturn msg",
+        "outputs": "1",
+        "noerr": 0,
+        "x": 510,
+        "y": 580,
+        "wires": [
+            [
+                "acbd77f.9768b88",
+                "b475ff81.e381f8",
+                "2ffd8274.70e6fe",
+                "7d9e4b81.60105c"
+            ]
+        ]
+    },
+    {
+        "id": "acbd77f.9768b88",
+        "type": "ui_text",
+        "z": "86e69d04.ca943",
+        "group": "16f81fde.a213a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IN0",
+        "format": "{{msg.payload[0]}}",
+        "layout": "row-spread",
+        "x": 930,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "b475ff81.e381f8",
+        "type": "ui_text",
+        "z": "86e69d04.ca943",
+        "group": "16f81fde.a213a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IN1",
+        "format": "{{msg.payload[1]}}",
+        "layout": "row-spread",
+        "x": 923,
+        "y": 519,
+        "wires": []
+    },
+    {
+        "id": "2ffd8274.70e6fe",
+        "type": "ui_text",
+        "z": "86e69d04.ca943",
+        "group": "16f81fde.a213a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IN2",
+        "format": "{{msg.payload[2]}}",
+        "layout": "row-spread",
+        "x": 928,
+        "y": 558,
+        "wires": []
+    },
+    {
+        "id": "7d9e4b81.60105c",
+        "type": "ui_text",
+        "z": "86e69d04.ca943",
+        "group": "16f81fde.a213a",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IN3",
+        "format": "{{msg.payload[3]}}",
+        "layout": "row-spread",
+        "x": 923,
+        "y": 595,
+        "wires": []
+    },
+    {
+        "id": "c90e6c9a.ce1f68",
+        "type": "modbus-write",
+        "z": "86e69d04.ca943",
+        "name": "output0",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "dataType": "Coil",
+        "adr": "4",
+        "quantity": "1",
+        "server": "8edc32a3.65914",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 520,
+        "y": 260,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "fbf609b3.fd9d58",
+        "type": "ui_switch",
+        "z": "86e69d04.ca943",
+        "name": "",
+        "label": "OUT0",
+        "group": "cba694a3.b143c8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 267,
+        "y": 259,
+        "wires": [
+            [
+                "c90e6c9a.ce1f68"
+            ]
+        ]
+    },
+    {
+        "id": "bffc3cb6.828858",
+        "type": "ui_switch",
+        "z": "86e69d04.ca943",
+        "name": "",
+        "label": "OUT1",
+        "group": "cba694a3.b143c8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 270,
+        "y": 320,
+        "wires": [
+            [
+                "34190b54.240dc4"
+            ]
+        ]
+    },
+    {
+        "id": "34190b54.240dc4",
+        "type": "modbus-write",
+        "z": "86e69d04.ca943",
+        "name": "output1",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "unitid": "1",
+        "dataType": "Coil",
+        "adr": "5",
+        "quantity": "1",
+        "server": "8edc32a3.65914",
+        "x": 520,
+        "y": 320,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "8c4469f7.406fe",
+        "type": "modbus-write",
+        "z": "86e69d04.ca943",
+        "name": "output2",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "unitid": "1",
+        "dataType": "Coil",
+        "adr": "6",
+        "quantity": "1",
+        "server": "8edc32a3.65914",
+        "x": 520,
+        "y": 380,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "a6836de6.1355c8",
+        "type": "ui_switch",
+        "z": "86e69d04.ca943",
+        "name": "",
+        "label": "OUT2",
+        "group": "cba694a3.b143c8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 267,
+        "y": 379,
+        "wires": [
+            [
+                "8c4469f7.406fe"
+            ]
+        ]
+    },
+    {
+        "id": "db69511.adfa3b",
+        "type": "ui_switch",
+        "z": "86e69d04.ca943",
+        "name": "",
+        "label": "OUT3",
+        "group": "cba694a3.b143c8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 270,
+        "y": 440,
+        "wires": [
+            [
+                "54fa023c.66e52c"
+            ]
+        ]
+    },
+    {
+        "id": "54fa023c.66e52c",
+        "type": "modbus-write",
+        "z": "86e69d04.ca943",
+        "name": "output3",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "unitid": "1",
+        "dataType": "Coil",
+        "adr": "7",
+        "quantity": "1",
+        "server": "8edc32a3.65914",
+        "x": 520,
+        "y": 440,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "8edc32a3.65914",
+        "type": "modbus-client",
+        "name": "baltoslocal",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": true,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "16f81fde.a213a",
+        "type": "ui_group",
+        "name": "Inputs",
+        "tab": "2df1935a.3dcee4",
+        "order": 1,
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "cba694a3.b143c8",
+        "type": "ui_group",
+        "name": "Outputs",
+        "tab": "2df1935a.3dcee4",
+        "order": 1,
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "2df1935a.3dcee4",
+        "type": "ui_tab",
+        "name": "Baltos Modbus GPIO Example",
+        "icon": "dashboard",
+        "order": 1
+    }
+]
