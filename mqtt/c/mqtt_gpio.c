@@ -56,7 +56,7 @@ void *read_digital_input_thread(void *data) {
 			MQTTClient_publishMessage(client, buf, &pubmsg, &token);
 			printf("Waiting for up to %d seconds for publication of %s\n"
 			        "on topic %s for client with ClientID: %s\n",
-				(int)(TIMEOUT/1000), pubmsg.payload, buf, "Baltos");
+				(int)(TIMEOUT/1000), (char *)pubmsg.payload, buf, "Baltos");
 
 			/* check publication state */
 			rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
@@ -68,6 +68,8 @@ void *read_digital_input_thread(void *data) {
 		
 		sleep(1);
 	}
+
+	return NULL;
 }
 
 int on_message(void *context, char *topicName, int topicLen,
@@ -83,19 +85,19 @@ int on_message(void *context, char *topicName, int topicLen,
 	buf[message->payloadlen] = '\0';
 	gpio_val = strtol(buf, NULL, 10);
 	if (!strcmp(topicName, "onrisc/gpio/output/0")) {
-		printf("Switching GPIO0 to %d\n", gpio_val);
+		printf("Switching GPIO0 to %ld\n", gpio_val);
 		gpios.mask = 0x10;
 		gpios.value = gpio_val ? 0x10 : 0x00;
 	} else if  (!strcmp(topicName, "onrisc/gpio/output/1")) {
-		printf("Switching GPIO1 to %d\n", gpio_val);
+		printf("Switching GPIO1 to %ld\n", gpio_val);
 		gpios.mask = 0x20;
 		gpios.value = gpio_val ? 0x20 : 0x00;
 	} else if  (!strcmp(topicName, "onrisc/gpio/output/2")) {
-		printf("Switching GPIO2 to %d\n", gpio_val);
+		printf("Switching GPIO2 to %ld\n", gpio_val);
 		gpios.mask = 0x40;
 		gpios.value = gpio_val ? 0x40 : 0x00;
 	} else if  (!strcmp(topicName, "onrisc/gpio/output/3")) {
-		printf("Switching GPIO3 to %d\n", gpio_val);
+		printf("Switching GPIO3 to %ld\n", gpio_val);
 		gpios.mask = 0x80;
 		gpios.value = gpio_val ? 0x80 : 0x00;
 	}
