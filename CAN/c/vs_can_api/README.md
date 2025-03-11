@@ -68,22 +68,22 @@ to your project directory i.e. library search path and invoke:
 
 ### Linux
 
-For USB-CAN Plus devices invoke (S2 - 50000 bit/s):
+For USB-CAN Plus devices invoke (2 - 50000 bit/s):
 
-    vs_j1939_dump /dev/ttyUSB0 S2
+    vs_j1939_dump /dev/ttyUSB0 2
 
 For NetCAN Plus device with the IP address 192.168.1.10 and Data Port 2001
-invoke (S2 - 50000 bit/s):
+invoke (2 - 50000 bit/s):
 
-    vs_j1939_dump 192.168.1.10:2001 S2
+    vs_j1939_dump 192.168.1.10:2001 2
 
 ### Windows
 
-For USB-CAN Plus devices invoke (S2 - 50000 bit/s):
+For USB-CAN Plus devices invoke (2 - 50000 bit/s):
 
-    vs_j1939_dump.exe COM3 S2
+    vs_j1939_dump.exe COM3 2
 
 For NetCAN Plus device with the IP address 192.168.1.10 and Data Port 2001
-invoke (S2 - 50000 bit/s):
+invoke (2 - 50000 bit/s):
 
-    vs_j1939_dump.exe 192.168.1.10:2001 S2
+    vs_j1939_dump.exe 192.168.1.10:2001 2
