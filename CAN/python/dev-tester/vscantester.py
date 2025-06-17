@@ -108,13 +108,19 @@ class SsdpListener(threading.Thread):
                 location_idx = buf.find(b"LOCATION:")
                 location_end_idx = buf.find(b"xml", location_idx)
                 url = buf[location_idx + 9:location_end_idx + 3]
-                response = urllib.request.urlopen(url.decode("utf-8"))
-                data = response.read()
-                text = data.decode('utf-8')
-                dev = self.parse_xml(text)
-                if dev:
-                    dev['ip'] = addr[0]
-                    self.dev_queue.put(dev)
+                try:
+                    response = urllib.request.urlopen(url.decode("utf-8"))
+                    data = response.read()
+                    text = data.decode("utf-8")
+                    dev = self.parse_xml(text)
+                    if dev:
+                        dev["ip"] = addr[0]
+                        self.dev_queue.put(dev)
+                except Exception as err:
+                    print(
+                        f"{url.decode('utf-8')} failed with the following message: {err}"
+                    )
+                    continue
 
 
 class UsbCan(object):
