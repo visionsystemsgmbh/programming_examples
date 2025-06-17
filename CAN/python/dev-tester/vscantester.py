@@ -258,7 +258,7 @@ def check_lsmod(driver):
 
 def find_file(path, drv_file_name):
     """Find file."""
-    for root, dirs, files in os.walk(path):
+    for root, _, files in os.walk(path):
         if drv_file_name in files:
             return os.path.join(root, drv_file_name)
 
