@@ -23,12 +23,12 @@ import serial.tools.list_ports
 
 import netifaces
 
-VSCAN_OK = b'\r'
-VSCAN_KO = b'\x07'
-MCAST_GRP = '239.255.255.250'
+VSCAN_OK = b"\r"
+VSCAN_KO = b"\x07"
+MCAST_GRP = "239.255.255.250"
 MCAST_PORT = 1900
 
-EXAMPLES = ('''\
+EXAMPLES = """\
             Examples
             --------
             Find all USB-CAN Plus devices:
@@ -45,7 +45,7 @@ EXAMPLES = ('''\
                 python3 vscantester.py -t same -b 100000 /dev/ttyUSB0
             Send a CAN frame continuously with incrementing last data byte at 100000b/s:
                 python3 vscantester.py -t inc -b 100000 /dev/ttyUSB0
-            ''')
+            """
 
 
 class SsdpListener(threading.Thread):
@@ -55,23 +55,18 @@ class SsdpListener(threading.Thread):
         threading.Thread.__init__(self)
         self.iface = iface
         self.dev_queue = dev_queue
-        self.sock = socket.socket(socket.AF_INET,
-                                  socket.SOCK_DGRAM,
-                                  socket.IPPROTO_UDP)
-        self.sock.setsockopt(socket.SOL_SOCKET,
-                             socket.SO_REUSEADDR, 1)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     def bind(self):
         """Bind to specified interface and multicast group."""
-        self.sock.bind(('', MCAST_PORT))
-        mreq = socket.inet_aton(
-            MCAST_GRP) + socket.inet_aton(self.iface)
-        self.sock.setsockopt(socket.IPPROTO_IP,
-                             socket.IP_ADD_MEMBERSHIP, mreq)
+        self.sock.bind(("", MCAST_PORT))
+        mreq = socket.inet_aton(MCAST_GRP) + socket.inet_aton(self.iface)
+        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         self.sock.settimeout(10)
-        self.sock.setsockopt(socket.IPPROTO_IP,
-                             socket.IP_MULTICAST_IF,
-                             socket.inet_aton(self.iface))
+        self.sock.setsockopt(
+            socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(self.iface)
+        )
 
     def get_xml_tag(self, child, tag):
         """Get XML tag from device description."""
@@ -88,10 +83,20 @@ class SsdpListener(threading.Thread):
                 for item in child:
                     if item.tag == "{urn:schemas-upnp-org:device-1-0}friendlyName":
                         if "NET-CAN" in item.text:
-                            dev['model'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}modelName")
-                            dev['fw'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}firmWareVersionNumber")
-                            dev['hw'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}hardWareVersionNumber")
-                            dev['sernum'] = self.get_xml_tag(child, "{urn:schemas-upnp-org:device-1-0}serialNumber")
+                            dev["model"] = self.get_xml_tag(
+                                child, "{urn:schemas-upnp-org:device-1-0}modelName"
+                            )
+                            dev["fw"] = self.get_xml_tag(
+                                child,
+                                "{urn:schemas-upnp-org:device-1-0}firmWareVersionNumber",
+                            )
+                            dev["hw"] = self.get_xml_tag(
+                                child,
+                                "{urn:schemas-upnp-org:device-1-0}hardWareVersionNumber",
+                            )
+                            dev["sernum"] = self.get_xml_tag(
+                                child, "{urn:schemas-upnp-org:device-1-0}serialNumber"
+                            )
                             return dev
 
         return None
@@ -107,7 +112,7 @@ class SsdpListener(threading.Thread):
             if b"devinfo.xml" in buf:
                 location_idx = buf.find(b"LOCATION:")
                 location_end_idx = buf.find(b"xml", location_idx)
-                url = buf[location_idx + 9:location_end_idx + 3]
+                url = buf[location_idx + 9 : location_end_idx + 3]
                 try:
                     response = urllib.request.urlopen(url.decode("utf-8"))
                     data = response.read()
@@ -138,10 +143,9 @@ class UsbCan(object):
         """Initialize serial port."""
         ret = True
         try:
-            self.ser_port = serial.serial_for_url(self.port,
-                                                  baudrate=3000000,
-                                                  timeout=1,
-                                                  rtscts=True)
+            self.ser_port = serial.serial_for_url(
+                self.port, baudrate=3000000, timeout=1, rtscts=True
+            )
         except serial.serialutil.SerialException as err:
             print(err)
             ret = False
@@ -154,7 +158,7 @@ class UsbCan(object):
     def close_can_channel(self):
         """Send 'C' to close the CAN channel."""
         try:
-            self.ser_port.write("C\r".encode('ascii'))
+            self.ser_port.write("C\r".encode("ascii"))
         except serial.serialutil.SerialException as err:
             print(err)
             return False
@@ -174,7 +178,7 @@ class UsbCan(object):
         """Check if a port is already open."""
         proc = Popen(["lsof"], stdout=PIPE, stderr=PIPE)
         output = proc.communicate()[0]
-        for line in output.decode('ascii').split('\n'):
+        for line in output.decode("ascii").split("\n"):
             if line.find(self.port) != -1:
                 print(f"{self.port} is already open:\n{line}")
 
@@ -182,7 +186,7 @@ class UsbCan(object):
         """Send 'N' to get the serial number."""
         ser_num = None
         try:
-            self.ser_port.write("N\r".encode('ascii'))
+            self.ser_port.write("N\r".encode("ascii"))
         except serial.serialutil.SerialException as err:
             print(err)
             return ser_num
@@ -196,13 +200,13 @@ class UsbCan(object):
             print(f"Wrong last character: {buf[len(buf) - 1]}")
             return ser_num
 
-        return buf[1:len(buf) - 2]
+        return buf[1 : len(buf) - 2]
 
     def get_version_info(self):
         """Send 'V' to get the firmware version."""
         ver = None
         try:
-            self.ser_port.write("V\r".encode('ascii'))
+            self.ser_port.write("V\r".encode("ascii"))
         except serial.serialutil.SerialException as err:
             print(err)
             return ver
@@ -216,7 +220,7 @@ class UsbCan(object):
             print(f"Wrong last character: {buf[len(buf) - 1]}")
             return ver
 
-        return buf[1:len(buf) - 1]
+        return buf[1 : len(buf) - 1]
 
 
 def find_all_usb_can_devices():
@@ -235,7 +239,7 @@ def find_port(port):
     for item in ports:
         if item.device == port:
             print(f"Serial port found: {item}")
-            if item.description.find('USB-CAN Plus') != -1:
+            if item.description.find("USB-CAN Plus") != -1:
                 print("This device has a correct description")
             else:
                 print(f"Device description is wrong: {item.description}")
@@ -245,7 +249,7 @@ def check_lsmod(driver):
     """Invoke lsmod and check for ftdi_sio driver."""
     proc = Popen(["lsmod"], stdout=PIPE, stderr=PIPE)
     output = proc.communicate()[0]
-    for line in output.decode('ascii').split('\n'):
+    for line in output.decode("ascii").split("\n"):
         if driver in line:
             return True
 
@@ -263,24 +267,23 @@ def find_file(path, drv_file_name):
 
 def find_driver(kernel_ver, drv_name):
     """Check whether slcan is available on the system."""
-    drv_info = {'loaded': False, 'state': 'na'}
+    drv_info = {"loaded": False, "state": "na"}
 
     if check_lsmod(drv_name):
-        drv_info['loaded'] = True
+        drv_info["loaded"] = True
 
     # check if the driver is in rootfs
-    drv_path = find_file(f"/lib/modules/{kernel_ver}/kernel/drivers",
-                         f"{drv_name}.ko")
+    drv_path = find_file(f"/lib/modules/{kernel_ver}/kernel/drivers", f"{drv_name}.ko")
     if drv_path:
-        drv_info['state'] = 'module'
-        drv_info['path'] = drv_path
+        drv_info["state"] = "module"
+        drv_info["path"] = drv_path
         return drv_info
 
     # check if the driver is builtin
     with open(f"/lib/modules/{kernel_ver}/modules.builtin", "r") as mods:
         for line in mods:
             if f"{drv_name}.ko" in line:
-                drv_info['state'] = 'builtin'
+                drv_info["state"] = "builtin"
                 break
 
     return drv_info
@@ -307,8 +310,7 @@ def ssdp_discover():
     for item in ifs:
         addrs = netifaces.ifaddresses(item)
         try:
-            ssdp_item = SsdpListener(addrs[netifaces.AF_INET][0]["addr"],
-                                     dev_queue)
+            ssdp_item = SsdpListener(addrs[netifaces.AF_INET][0]["addr"], dev_queue)
             ssdp_item.start()
             ssdp_listeners.append(ssdp_item)
         except KeyError:
@@ -323,23 +325,25 @@ def ssdp_discover():
             continue
         if msg not in netcans:
             netcans.append(msg)
-            print(f"NetCAN {msg['model']}({msg['ip']}) -> "
-                  f"(SN: {msg['sernum']}, FW: {msg['fw']}, HW: {msg['hw']})")
+            print(
+                f"NetCAN {msg['model']}({msg['ip']}) -> "
+                f"(SN: {msg['sernum']}, FW: {msg['fw']}, HW: {msg['hw']})"
+            )
 
 
 def show_driver_info(drv_name, drv_info):
     """Show driver information."""
-    if drv_info['state'] == 'na':
+    if drv_info["state"] == "na":
         print(f"{drv_name}.ko not found on the system")
-    elif drv_info['state'] == 'builtin':
+    elif drv_info["state"] == "builtin":
         print(f"{drv_name}.ko is builtin")
     else:
-        if drv_info['loaded']:
+        if drv_info["loaded"]:
             print(f"{drv_name}.ko is a module and is loaded")
-            print(drv_info['path'])
+            print(drv_info["path"])
         else:
             print(f"{drv_name}.ko is a module and is not loaded")
-            print(drv_info['path'])
+            print(drv_info["path"])
 
 
 def get_system_info():
@@ -347,7 +351,7 @@ def get_system_info():
     # get kernel version
     proc = Popen(["uname", "-r"], stdout=PIPE, stderr=PIPE)
     output = proc.communicate()[0]
-    kernel_ver = output.decode('ascii').split('\n')[0]
+    kernel_ver = output.decode("ascii").split("\n")[0]
 
     print(f"Kernel: {kernel_ver}")
 
@@ -361,10 +365,9 @@ def get_system_info():
 def receive_can_frames(port, bitrate):
     """Receive CAN frames."""
     try:
-        bus = can.interface.Bus(bustype='slcan',
-                                channel=f"{port}@3000000",
-                                rtscts=True,
-                                bitrate=bitrate)
+        bus = can.interface.Bus(
+            bustype="slcan", channel=f"{port}@3000000", rtscts=True, bitrate=bitrate
+        )
     except serial.serialutil.SerialException as err:
         print(err)
         sys.exit(1)
@@ -374,9 +377,7 @@ def receive_can_frames(port, bitrate):
     while True:
         msg = bus.recv()
         data = "".join("{:02X} ".format(byte) for byte in msg.data)
-        print("{:X} [{}] {}".format(msg.arbitration_id,
-                                    msg.dlc,
-                                    data))
+        print("{:X} [{}] {}".format(msg.arbitration_id, msg.dlc, data))
 
     bus.shutdown()
 
@@ -384,35 +385,34 @@ def receive_can_frames(port, bitrate):
 def send_can_frames(port, bitrate, mode):
     """Send CAN frames."""
     try:
-        bus = can.interface.Bus(bustype='slcan',
-                                channel=f"{port}@3000000",
-                                rtscts=True,
-                                bitrate=bitrate)
+        bus = can.interface.Bus(
+            bustype="slcan", channel=f"{port}@3000000", rtscts=True, bitrate=bitrate
+        )
     except serial.serialutil.SerialException as err:
         print(err)
         sys.exit(1)
 
-    if mode == 'single':
+    if mode == "single":
         print("Sending a single CAN frame")
-        msg = can.Message(arbitration_id=0x100,
-                          is_extended_id=False,
-                          data=[0x00, 0x01, 0x02, 0x03])
+        msg = can.Message(
+            arbitration_id=0x100, is_extended_id=False, data=[0x00, 0x01, 0x02, 0x03]
+        )
         bus.send(msg)
-    elif mode == 'same':
+    elif mode == "same":
         print("Sending the same CAN frame every 500ms")
-        msg = can.Message(arbitration_id=0x100,
-                          is_extended_id=False,
-                          data=[0x00, 0x01, 0x02, 0x03])
+        msg = can.Message(
+            arbitration_id=0x100, is_extended_id=False, data=[0x00, 0x01, 0x02, 0x03]
+        )
         while True:
             bus.send(msg)
             time.sleep(0.5)
-    elif mode == 'inc':
+    elif mode == "inc":
         print("Sending a CAN frame with incrementing last byte every 500ms")
-        msg = can.Message(arbitration_id=0x100,
-                          is_extended_id=False,
-                          data=[0x00, 0x01, 0x02, 0x03])
+        msg = can.Message(
+            arbitration_id=0x100, is_extended_id=False, data=[0x00, 0x01, 0x02, 0x03]
+        )
         while True:
-            if msg.data[3] == 0xff:
+            if msg.data[3] == 0xFF:
                 msg.data[3] = 0
             else:
                 msg.data[3] = msg.data[3] + 1
@@ -422,34 +422,41 @@ def send_can_frames(port, bitrate, mode):
 
 def main():
     """main routine."""
-    parser = argparse.ArgumentParser(description='VSCAN device tester',
-                                     usage=argparse.SUPPRESS,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     epilog=textwrap.dedent(EXAMPLES))
-    parser.add_argument("-u", "--upnp",
-                        help="Perform UPnP/SSDP search",
-                        action='store_true')
-    parser.add_argument("-r", "--rx",
-                        help="Receive CAN messages",
-                        action='store_true')
-    parser.add_argument("-b", "--bitrate",
-                        help="CAN bitrate",
-                        type=int,
-                        default=1000000)
-    parser.add_argument("-tx", "--tx",
-                        help="Transmit CAN frame(s) mode",
-                        choices=['single', 'same', 'inc'],
-                        default=None)
-    if sys.platform.startswith('linux'):
-        parser.add_argument("-s", "--system",
-                            help="Get system information (Linux only)",
-                            action='store_true')
-    parser.add_argument("port",
-                        nargs="?",
-                        default="all",
-                        action="store",
-                        help="Serial port name. If omitted, the tool "
-                             "will search for all available devices")
+    parser = argparse.ArgumentParser(
+        description="VSCAN device tester",
+        usage=argparse.SUPPRESS,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent(EXAMPLES),
+    )
+    parser.add_argument(
+        "-u", "--upnp", help="Perform UPnP/SSDP search", action="store_true"
+    )
+    parser.add_argument("-r", "--rx", help="Receive CAN messages", action="store_true")
+    parser.add_argument(
+        "-b", "--bitrate", help="CAN bitrate", type=int, default=1000000
+    )
+    parser.add_argument(
+        "-tx",
+        "--tx",
+        help="Transmit CAN frame(s) mode",
+        choices=["single", "same", "inc"],
+        default=None,
+    )
+    if sys.platform.startswith("linux"):
+        parser.add_argument(
+            "-s",
+            "--system",
+            help="Get system information (Linux only)",
+            action="store_true",
+        )
+    parser.add_argument(
+        "port",
+        nargs="?",
+        default="all",
+        action="store",
+        help="Serial port name. If omitted, the tool "
+        "will search for all available devices",
+    )
     try:
         args = parser.parse_args()
     except SystemExit:
@@ -460,30 +467,30 @@ def main():
         ssdp_discover()
         os._exit(0)
 
-    if sys.platform.startswith('linux'):
+    if sys.platform.startswith("linux"):
         if args.system:
             get_system_info()
             sys.exit(0)
 
     port_list = []
-    if args.port == 'all':
+    if args.port == "all":
         port_list = find_all_usb_can_devices()
         if not port_list:
             print("No USB-CAN devices found")
-            if sys.platform.startswith('linux'):
+            if sys.platform.startswith("linux"):
                 get_system_info()
     else:
         port_list.append(fix_port_type(args.port))
 
     if args.rx:
-        if args.port == 'all':
+        if args.port == "all":
             print("Please specify a port")
             sys.exit(1)
         else:
             receive_can_frames(fix_port_type(args.port), args.bitrate)
 
     if args.tx:
-        if args.port == 'all':
+        if args.port == "all":
             print("Please specify a port")
             sys.exit(1)
         else:
@@ -492,7 +499,7 @@ def main():
 
     for item in port_list:
         usbcan = UsbCan(item)
-        if sys.platform.startswith('linux'):
+        if sys.platform.startswith("linux"):
             find_port(usbcan.port)
             usbcan.lsof()
 
@@ -502,8 +509,10 @@ def main():
 
         if not usbcan.close_can_channel():
             print("Failed to close the CAN channel")
-            print("The port could be opened but this "
-                  "device doesn't respond to the ASCII commands")
+            print(
+                "The port could be opened but this "
+                "device doesn't respond to the ASCII commands"
+            )
             sys.exit(1)
 
         ser_num = usbcan.get_serial_number()
@@ -521,12 +530,14 @@ def main():
         hw_major = int(ver[:1], 16)
         hw_minor = int(ver[1:2], 16)
         print(f"Found VSCAN device with the following info:")
-        print(f"{usbcan.port} -> (SN: {ser_num.decode('ascii')}, "
-              f"FW: {ver_major}:{ver_minor}, "
-              f"HW: {hw_major}:{hw_minor})")
+        print(
+            f"{usbcan.port} -> (SN: {ser_num.decode('ascii')}, "
+            f"FW: {ver_major}:{ver_minor}, "
+            f"HW: {hw_major}:{hw_minor})"
+        )
 
         usbcan.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
