@@ -27,19 +27,19 @@ def main():
 
     # send standard frame
     msg = can.Message(arbitration_id=0x100,
-                      extended_id=False,
+                      is_extended_id=False,
                       data=[0x00, 0x01, 0x02, 0x03])
     bus.send(msg)
 
     # send extended frame
     msg = can.Message(arbitration_id=0x100,
-                      extended_id=True,
+                      is_extended_id=True,
                       data=[0x00, 0x01, 0x02, 0x03])
     bus.send(msg)
 
     # send RTR frame
     msg = can.Message(arbitration_id=0x100,
-                      extended_id=True,
+                      is_extended_id=True,
                       is_remote_frame=True)
     bus.send(msg)
 
