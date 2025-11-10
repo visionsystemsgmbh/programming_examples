@@ -37,7 +37,7 @@ def main():
     try:
         setup_can_channel(args.send, args.address, args.bitrate)
     except IOError as err:
-        print("Failed to setup CAN channel\n" + err)
+        print(f"Failed to setup CAN channel: {err}")
         sys.exit(1)
 
     try:
@@ -47,7 +47,7 @@ def main():
             data, addr = sock.recvfrom(1024)
             print(data)
     except IOError as err:
-        print("Failed to receive CAN frame\n" + err)
+        print(f"Failed to receive CAN frame: {err}")
         sys.exit(1)
 
 
