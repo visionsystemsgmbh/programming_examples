@@ -12,11 +12,11 @@ import argparse
 
 def setup_can_channel(ip_port, ip_dest, speed):
     """Setup CAN speed and open the channel."""
-    buf = "C\rS{}\rO\r".format(speed)
+    buf = f"C\rS{speed}\rO\r"
     send_sock = socket.socket(socket.AF_INET,
                               socket.SOCK_DGRAM,
                               socket.IPPROTO_UDP)
-    send_sock.sendto(buf, (ip_dest, ip_port))
+    send_sock.sendto(bytes(buf, "ascii"), (ip_dest, ip_port))
 
 
 def main():
