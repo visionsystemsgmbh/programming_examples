@@ -45,7 +45,7 @@ def main():
         sock.bind(("0.0.0.0", args.receive))
         while True:
             data, addr = sock.recvfrom(1024)
-            print(data)
+            print(data.decode("ascii"))
     except IOError as err:
         print(f"Failed to receive CAN frame: {err}")
         sys.exit(1)
