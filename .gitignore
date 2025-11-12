@@ -4,3 +4,6 @@ CAN/LabVIEW/vscanex.lvlps
 *.so
 *.a
 *.exe
+venv
+dist
+*egg-info
