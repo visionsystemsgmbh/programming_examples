@@ -1,6 +1,6 @@
 project (CANExamples C)
 
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.12)
 
 option(SUPPORT_32_BIT_ON_64_BIT OFF)
 option(J1939_EXAMPLES "Build J1939 examples" OFF)
