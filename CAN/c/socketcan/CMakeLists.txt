@@ -1,6 +1,6 @@
-project (CANExamples C)
-
 cmake_minimum_required (VERSION 3.12)
+
+project (CANExamples C)
 
 option(J1939_EXAMPLES "Build J1939 examples" OFF)
 
