@@ -17,19 +17,15 @@ Compilation
 
 1. `git clone https://github.com/visionsystemsgmbh/programming_examples.git`
 2. `cd CAN/c/vs_can_api`
-3. `mkdir build`
-4. `cd build`
-5. `cmake ..`
-6. `make`
+3. `cmake -B build`
+4. `cmake --build build`
 
 ### Windows (Microsoft Visual Studio 2008)
 
-1.  `git clone https://github.com/visionsystemsgmbh/programming_examples.git`
+1. `git clone https://github.com/visionsystemsgmbh/programming_examples.git`
 2. `cd CAN\c\vs_can_api`
-3. `mkdir build`
-4. `cd build`
-5. `cmake .. -G "Visual Studio 9 2008"`
-6. open generated solution file
+3. `cmake -B build -G "Visual Studio 9 2008"`
+4. open generated solution file
 
 Usage
 -----
@@ -63,8 +59,8 @@ Add `vs_can_j1939.h`, `vs_can_j1939.lib` or `vs_can_j1939.so` from this
 [archive](http://www.vscom.de/download/multiio/Windows7/driver/VSCAN_J1939.zip)
 to your project directory i.e. library search path and invoke:
 
-1. `cmake .. -DJ1939_EXAMPLES=ON`
-2. `make`
+1. `cmake -B build -DJ1939_EXAMPLES=ON`
+2. `cmake --build build`
 
 ### Linux
 
