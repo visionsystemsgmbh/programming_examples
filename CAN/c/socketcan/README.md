@@ -9,10 +9,8 @@ These examples come with a CMake file `CMakeLists.txt`. CMake usage is optional.
 
 1. `git clone https://github.com/visionsystemsgmbh/programming_examples.git`
 2. `cd CAN/c/socketcan`
-3. `mkdir build`
-4. `cd build`
-5. `cmake ..`
-6. `make`
+3. `cmake -B build`
+4. `cmake --build build`
 
 ## CAN Interface Setup
 
@@ -45,7 +43,6 @@ These devices work over TCP/IP and need a pseudo device that simulates a
 serial port i.e. `/dev/netcan0`. As a superuser, you can create it as follows:
 
     socat pty,link=/dev/netcan0,raw tcp:192.168.254.254:2001 &
-
 
 If you use `sudo`, invoke:
 
@@ -85,8 +82,8 @@ for the installation of the J1939 related drivers.
 
 Invoke the following commands to also build J1939 examples:
 
-1. `cmake .. -DJ1939_EXAMPLES=ON`
-2. `make`
+1. `cmake -B build -DJ1939_EXAMPLES=ON`
+2. `cmake --build build`
 
 The following examples are available:
 
